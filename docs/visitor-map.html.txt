@@ -1,0 +1,11 @@
+<!-- Active on the homepage. Kang An approved FlagCounter on 2026-09-29. Keep this counter ID when updating. -->
+<section class="visitor-section" aria-labelledby="visitor-title">
+  <div>
+    <h2 id="visitor-title">Visitors</h2>
+    <p class="visitor-note">Homepage visits around the world.</p>
+    <p class="visitor-note"><a href="https://info.flagcounter.com/bpT9" target="_blank" rel="noopener noreferrer">View statistics ↗</a></p>
+  </div>
+  <div class="visitor-map">
+    <a href="https://info.flagcounter.com/bpT9"><img src="https://s01.flagcounter.com/map/bpT9/size_s/txt_626B79/border_FFFFFF/pageviews_1/viewers_0/flags_0/" alt="Flag Counter" border="0"></a>
+  </div>
+</section>

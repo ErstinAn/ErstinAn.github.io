@@ -14,7 +14,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
 
 ## 页面安排
 
-- **Home**：个人简介、联系方式、工业界求职提示、News、访客区。没有 Research 项目列表和 Blog 摘要。
+- **Home**：照片、个人简介、联系方式、博士后及工业界求职信息、News、访客区。没有 Research 项目列表和 Blog 摘要。
 - **Research**：研究综述、Google Scholar、维护日期、左图右文的项目列表。
 - **Activities**：报告、演讲和学术活动，当前保留占位。
 - **Blog**：文章目录和每个项目的独立博客模板。
@@ -34,24 +34,26 @@ News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，�
 | `dist/blog/project-02.html` | 第二篇文章模板 |
 | `dist/assets/css/style.css` | 全站实验室笔记主题 |
 | `dist/assets/files/KangAn_CV_1page.pdf` | 原始一页 CV 的完整副本 |
+| `dist/assets/files/profile_pic.jpg` | 你提供的个人照片 |
+| `docs/visitor-map.html.txt` | 当前访客地图代码备份，保留原编号以延续统计 |
 | `dist/design-compare.html` | 之前的三种风格对比，供参考 |
 | `.openai/hosting.json` | 静态目录说明，无远程 Site ID |
 
-`dist/` 中是直接编辑的源码，不是需要重新生成的构建产物。页面不依赖 JavaScript、外部字体或 CDN。
+`dist/` 中是直接编辑的源码，不是需要重新生成的构建产物。页面不依赖 JavaScript、外部字体或前端框架 CDN；访客地图使用 FlagCounter 在线图片。
 
 ## 已填的真实信息
 
-姓名 Kang An、Rice University 博士生身份、研究简介、Email、GitHub、Google Scholar、LinkedIn 均来自你的明确说明或 `KangAn_CV_1page.pdf`。简介仅概括优化、深度学习及大模型预训练，不将未经确认的项目结果写成事实。
+姓名 Kang An（安康）、Rice University 博士生身份、研究简介、Email、GitHub、Google Scholar、LinkedIn 均来自你的明确说明或 `KangAn_CV_1page.pdf`。首页简介和三条 News 已按你提供的内容填好，并润色英文拼写与语法。简介包含导师 Shiqian Ma、合作导师 Donald Goldfarb 的主页链接，以及博士后、工业界全职和实习求职信息。News 按 2026 年 9 月 29 日、9 月 9 日、8 月 23 日倒序排列，Jiaxiang Li 的主页已链接。
 
-CV 使用 `/Users/evelyn/Documents/KangAn_CV_1page.pdf` 的原文件副本，与 Downloads 中同名文件一致。没有改写或重新导出 PDF。以后更新简历，覆盖 `dist/assets/files/KangAn_CV_1page.pdf` 即可，各页链接保持有效。
+CV 最初使用 `/Users/evelyn/Documents/KangAn_CV_1page.pdf` 的副本。这次首页修改保留了你当前放在网站中的 PDF，没有改写、重新导出或覆盖它。以后更新简历，覆盖 `dist/assets/files/KangAn_CV_1page.pdf` 即可，各页链接保持有效。
 
-具体岗位与可入职时间仍待填写。CV 的预计毕业时间不等同于入职时间。照片、项目图、项目详情、News 和 Activities 使用明确的占位；没有虚构成果、日期或访客统计。
+可入职时间仍待确认，CV 的预计毕业时间不等同于入职时间。照片使用你提供的 `profile_pic.jpg`。Research 项目图、项目详情和 Activities 仍待填写，没有虚构成果或活动。
 
 ## 如何更新
 
 ### 首页
 
-编辑 `dist/index.html` 中的 `.profile`。求职行位于 `.job-note`，照片占位位于 `.portrait-slot`。News 位于 `#news` 下的 `.news-list`，新消息放在最上面，日期与正文分别填写。
+编辑 `dist/index.html` 中的 `.profile`。简介及求职信息位于 `.profile-bio`，照片位于 `.portrait`。更换同名照片后，同时更新图片的 `width`、`height` 和 `alt` 属性。News 位于 `#news` 下的 `.news-list`，新消息放在最上面；同时更新可见日期和 `<time datetime="YYYY-MM-DD">` 的机器可读日期。
 
 ### Research
 
@@ -91,7 +93,11 @@ CV 使用 `/Users/evelyn/Documents/KangAn_CV_1page.pdf` 的原文件副本，与
 
 ## 访客统计
 
-当前显示未接入状态，没有发送访客数据或显示模拟数字。正式上线后再接入统计服务，明确访问次数的口径，位置使用国家/地区等粗粒度信息。
+已为该主页启用独立的 FlagCounter 地图，编号 `bpT9`，统计页为 <https://info.flagcounter.com/bpT9>。首页 `.visitor-section` 内为实际代码，`docs/visitor-map.html.txt` 保留备份。你于 2026 年 9 月 29 日确认启用，并同意[服务条款](https://flagcounter.com/terms.html)和[隐私政策](https://flagcounter.com/privacy.html)。没有提交邮箱、创建密码或购买付费服务。
+
+地图使用原生 HTML 图片，加载时由 FlagCounter 根据 IP 估计国家/地区，不要求精确位置权限。当前仅统计包含该图片的主页，且本地预览访问也会计入；最初几次访问包含接入检查，不能回溯接入前的访问。Pageviews 是图片加载次数，不等于独立访客人数；独立访客默认按 24 小时去重。地图图片可能有约 5 分钟刷新延迟。点击地图或 View statistics 可打开统计详情。如果网络或浏览器拦截第三方图片，地图可能无法加载或计数。
+
+保留同一个计数器编号和官方图片链接，更新页面不需要重新生成计数器。不要下载地图作为静态图片替换，否则无法统计新访问。免费计数器连续 30 天没有新访客可能被删除；未提供邮箱的计数器没有管理后台。详见 [FlagCounter FAQ](https://flagcounter.com/faq.html)。
 
 ## 后续发布
 
