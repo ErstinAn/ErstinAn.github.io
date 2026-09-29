@@ -1,97 +1,100 @@
-# ErstinAn 的个人主页模板
+# Kang An 的个人主页模板
 
-这是一份本地设计预览，使用原生 HTML 和共用 CSS。无需安装 npm，也没有构建步骤。当前没有发布到公网、创建远程 GitHub 仓库或接入访客统计。
+本版采用你选中的第三种“实验室笔记”风格：浅灰窄侧栏、白色正文区、克制的蓝紫链接、等宽标题和元信息。使用原生 HTML + CSS，没有框架、安装依赖或构建步骤。当前仍是本地预览，未公开发布。
 
-## 打开预览
+## 查看
 
-最方便的方法：直接用浏览器打开 `dist/index.html`。所有页面、CSS 和页内链接均使用相对路径，支持本地文件方式浏览。
-
-也可以在这个文件夹运行：
+用浏览器打开 `dist/index.html`；也可以在项目文件夹运行：
 
 ```sh
 python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
 ```
 
-然后访问 `http://127.0.0.1:8765/`。按 Control-C 停止预览。
+访问 `http://127.0.0.1:8765/`。按 Control-C 停止服务器。
 
-## 文件对应关系
+## 页面安排
 
-| 文件 | 修改内容 |
+- **Home**：个人简介、联系方式、工业界求职提示、News、访客区。没有 Research 项目列表和 Blog 摘要。
+- **Research**：研究综述、Google Scholar、维护日期、左图右文的项目列表。
+- **Activities**：报告、演讲和学术活动，当前保留占位。
+- **Blog**：文章目录和每个项目的独立博客模板。
+- **CV**：直接打开 `KangAn_CV_1page.pdf`。
+
+News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，不再提供独立内容或侧栏入口。
+
+## 文件位置
+
+| 文件 | 用途 |
 | --- | --- |
-| `dist/index.html` | 姓名、个人介绍、求职信息、首页项目、最新动态、最新文章 |
-| `dist/research.html` | 研究综述、维护日期、完整项目介绍和链接 |
-| `dist/news.html` | 历史动态 |
+| `dist/index.html` | 个人介绍、联系方式、求职提示和 News |
+| `dist/research.html` | 研究综述及项目列表 |
+| `dist/activities.html` | Activities |
 | `dist/blog/index.html` | 博客目录 |
-| `dist/blog/project-01.html` | 第一篇项目博客模板 |
-| `dist/blog/project-02.html` | 第二篇项目博客模板 |
-| `dist/assets/css/style.css` | 全站颜色、字体、间距、手机排版 |
-| `.openai/hosting.json` | 静态网站目录说明；当前无远程 Site ID |
+| `dist/blog/project-01.html` | 第一篇文章模板 |
+| `dist/blog/project-02.html` | 第二篇文章模板 |
+| `dist/assets/css/style.css` | 全站实验室笔记主题 |
+| `dist/assets/files/KangAn_CV_1page.pdf` | 原始一页 CV 的完整副本 |
+| `dist/design-compare.html` | 之前的三种风格对比，供参考 |
+| `.openai/hosting.json` | 静态目录说明，无远程 Site ID |
 
-`dist` 里就是直接编辑的网站源码，不是需要反复生成的构建产物。保留它是为了让静态预览与后续发布使用同一份文件。
+`dist/` 中是直接编辑的源码，不是需要重新生成的构建产物。页面不依赖 JavaScript、外部字体或 CDN。
 
-## 当前使用的真实信息
+## 已填的真实信息
 
-- GitHub：`ErstinAn`，链接 `https://github.com/ErstinAn`
-- 联系邮箱：暂使用你提供的 `ka56@rice.edu`；如果主页需要其他联系邮箱，替换各页面的 `mailto:`。
-- 求职方向：工业界。岗位类型和可入职时间仍保留占位。
-- 显示名称暂用 GitHub 用户名；没有推断你的真实姓名、所属机构或研究方向。
+姓名 Kang An、Rice University 博士生身份、研究简介、Email、GitHub、Google Scholar、LinkedIn 均来自你的明确说明或 `KangAn_CV_1page.pdf`。简介仅概括优化、深度学习及大模型预训练，不将未经确认的项目结果写成事实。
 
-所有方括号内容均待填写。照片和论文图是明确标记的占位框，没有编造论文、成果、访客数字或地图数据。CV、arXiv、Google Scholar 没有使用虚假链接；Blog 按钮可以打开真实存在的本地文章模板。
+CV 使用 `/Users/evelyn/Documents/KangAn_CV_1page.pdf` 的原文件副本，与 Downloads 中同名文件一致。没有改写或重新导出 PDF。以后更新简历，覆盖 `dist/assets/files/KangAn_CV_1page.pdf` 即可，各页链接保持有效。
 
-## 替换项目图片
+具体岗位与可入职时间仍待填写。CV 的预计毕业时间不等同于入职时间。照片、项目图、项目详情、News 和 Activities 使用明确的占位；没有虚构成果、日期或访客统计。
 
-在 `dist/assets/images/` 下放置图片（需要时新建该目录），把项目的整个 `figure-slot` 占位元素替换为：
+## 如何更新
 
-```html
-<img class="project-image"
-     src="assets/images/project-01.webp"
-     alt="用一句话说明图里的方法或结果"
-     width="640" height="450" loading="lazy">
-```
+### 首页
 
-博客文章里的图片路径应使用 `../assets/images/...`。项目标题、图和链接在首页与 Research 页面各有一份，修改时需同步。
+编辑 `dist/index.html` 中的 `.profile`。求职行位于 `.job-note`，照片占位位于 `.portrait-slot`。News 位于 `#news` 下的 `.news-list`，新消息放在最上面，日期与正文分别填写。
 
-## 填写研究综述
+### Research
 
-`research.html` 中已经保留：Research 标题 → Scholar 引导 → 手动维护日期 → 综述 → Selected publications。
+每个项目是一个 `<article class="research-item">`。修改标题、作者、发表信息、摘要、个人贡献和三项链接。Research 页头的 Google Scholar 已指向你的个人主页；每个项目的 Scholar 链接需要对应到单篇论文，当前仍待补充。
 
-综述建议覆盖三个问题：你研究什么问题；你用什么方法；它对实际应用或未来研究有什么价值。当前的英文句子只提供结构，不代表已经确认的个人经历。
-
-全站 Google Scholar 应指向你的个人文献列表；每个项目的 Google Scholar 应指向对应论文。两者不要混用。
-
-## 激活 CV、arXiv 和 Scholar
-
-把灰色占位 `span` 替换为带真实 `href` 的 `a`，同时去掉 `aria-disabled`、`pending` 和 `unavailable`。
+将论文链接的 `span` 换成真实的 `a`，并移除 `aria-disabled`、`unavailable` 和 `pending`。例如：
 
 ```html
-<a class="project-link" href="你的真实论文地址"
-   target="_blank" rel="noopener noreferrer">arXiv ↗</a>
+<a class="project-link" href="真实的论文地址" target="_blank" rel="noopener noreferrer">arXiv</a>
 ```
 
-CV 建议放在 `dist/assets/files/cv.pdf`。顶栏和简介的 CV 占位都需要替换为链接；博客子目录里使用 `../assets/files/cv.pdf`。
+将图片放在 `dist/assets/images/` 中（按需新建），并将图片占位框替换为：
 
-## 新增博客
+```html
+<img class="project-image" src="assets/images/project-01.webp"
+     alt="用一句话解释图片内容" width="640" height="450" loading="lazy">
+```
 
-1. 复制 `dist/blog/project-01.html`，换成稳定、有意义的文件名。
-2. 修改 `<title>`、主标题、作者、日期、摘要和正文。正文直接写在 `<article class="article-content">` 中。
-3. 更新目录锚点以及“Related project / Back to the project”的地址。
-4. 在 `dist/blog/index.html` 和首页添加或更新文章卡片。
-5. 给对应的 Research 项目补上 Blog 链接。
+项目只在 Research 页维护，不再需要同时更新首页列表。
 
-文章模板含正文、目录、图片与图注、引用、代码块以及公式预留位置。公式位置目前只是占位，尚未加载 LaTeX 渲染库。有实际公式时再配置。中英文都可直接编写；中文文章将最上方 `lang="en"` 改为 `lang="zh-CN"`。
+### Activities
 
-本地查看模板不依赖 JavaScript、远程字体或 CDN。网站导航是静态 HTML，修改导航时要同步各页面。
+编辑 `dist/activities.html` 中的 `.activity-list`。每项填写日期、活动类别、标题、说明以及已有的相关链接；没有链接时删除对应占位即可。
+
+### Blog
+
+1. 复制 `dist/blog/project-01.html` 并取一个稳定的文件名。
+2. 修改标题、日期、摘要和 `<article class="article-content">` 中的内容。
+3. 同步更新文章目录锚点及相关项目链接。
+4. 在 `dist/blog/index.html` 增加文章条目，并在对应 Research 项目中更新 Blog 链接。
+
+文章模板包含正文、图注、引用、代码块和公式预留位置；公式目前没有接入 LaTeX 渲染库。中文文章可直接写，将页面 `lang="en"` 改为 `lang="zh-CN"`。
+
+### 导航
+
+所有页面的侧栏直接写在 HTML 中。改动菜单时需同步首页、Research、Activities、博客目录和文章页。博客目录下的资源使用 `../` 相对路径。
 
 ## 访客统计
 
-目前没有启用统计。Visitors 区域显示“Not connected”和破折号。正式上线时可以接入 MapMyVisitors 等服务，并确认它统计的是访问次数还是独立访客数。位置只使用粗粒度国家/地区展示。服务不可用时不应影响正文阅读。
+当前显示未接入状态，没有发送访客数据或显示模拟数字。正式上线后再接入统计服务，明确访问次数的口径，位置使用国家/地区等粗粒度信息。
 
-## GitHub 状态与后续发布
+## 后续发布
 
-制作时检查到 Git 已安装，全局用户名是 `ErstinAn`，邮箱为 `ka56@rice.edu`；`gh auth status` 显示 GitHub CLI 尚未登录。这个结果不代表你的浏览器、GitHub Desktop 或其他 Git 凭据一定未登录。
+本地 Git 仓库已建立。Git 全局用户为 `ErstinAn`，邮箱为 `ka56@rice.edu`；此前检查 GitHub CLI 尚未登录，没有设置 origin 或推送。以后计划使用 `erstinan.github.io`。
 
-后续计划用个人仓库 `erstinan.github.io`，网址为 `https://erstinan.github.io/`。已在当前文件夹初始化独立的本地 Git 仓库并保存初版。这次只做本地模板，没有设置远程 origin 或推送。
-
-当前站点文件在 `dist/` 下，因此不能直接将仓库根目录设为 Pages 发布源。正式发布时可选择配置 GitHub Actions 上传 `dist`，或调整网站目录后再使用分支发布。到时只选择一种发布方式并更新这份说明。
-
-正式上线前，把待填内容换成真实内容，并移除每页的 `noindex, nofollow` 标签及模板标记。预览版的这些标记用于明确区分模板和正式个人主页。
+网站源码位于 `dist/`，正式发布时可以配置 GitHub Actions 上传该目录，或调整到适合分支发布的目录。预览版保留 `noindex, nofollow`；填好正式内容后再移除，并确认简历内容适合公开。
