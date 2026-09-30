@@ -1,6 +1,6 @@
 # Kang An 的个人主页模板
 
-本版采用你选中的第三种“实验室笔记”风格：浅灰窄侧栏、白色正文区、克制的蓝紫链接、等宽标题和元信息。使用原生 HTML + CSS，没有框架、安装依赖或构建步骤。当前仍是本地预览，未公开发布。
+本版采用你选中的第三种“实验室笔记”风格：浅灰窄侧栏、白色正文区、克制的蓝紫链接、等宽标题和元信息。使用原生 HTML + CSS，没有框架、安装依赖或构建步骤。网站通过 GitHub Pages 发布，地址为 <https://erstinan.github.io/>。
 
 ## 查看
 
@@ -120,10 +120,20 @@ Manifold Poster 使用原始 PDF 的完整第一页生成 1600 × 1067 像素 PN
 
 保留同一个计数器编号和官方图片链接，更新页面不需要重新生成计数器。不要下载地图作为静态图片替换，否则无法统计新访问。免费计数器连续 30 天没有新访客可能被删除；未提供邮箱的计数器没有管理后台。详见 [FlagCounter FAQ](https://flagcounter.com/faq.html)。
 
-## 后续发布
+## 发布与更新
 
-目标是 GitHub 仓库 `ErstinAn/ErstinAn.github.io` 和网址 `https://erstinan.github.io/`。首次发布需要完成 GitHub CLI 登录、建立仓库并启用 GitHub Pages 的 GitHub Actions 来源。
+源码仓库为 <https://github.com/ErstinAn/ErstinAn.github.io>，公开网址为 <https://erstinan.github.io/>。GitHub CLI 已登录 ErstinAn，GitHub Pages 使用 GitHub Actions 发布。
 
 网站源码仍位于 `dist/`，无安装或构建步骤。`.github/workflows/pages.yml` 仅上传 `dist/`，不会部署根目录的说明文件、博客模板或本地设计草稿。正式的四个页面已移除 `noindex, nofollow`；旧 News 跳转页仍保留 noindex。
 
 今后修改页面或写完 Blog 后，先本地预览，再提交并推送到 `main`。GitHub Actions 会自动更新网站，发布结果可在仓库 Actions 中查看。不要直接在临时部署产物里编辑网页。
+
+日常更新页面、简历或图片后，在项目目录执行：
+
+```sh
+git add dist
+git commit -m "Update homepage"
+git push
+```
+
+你也可以直接让我修改并发布；只在本地编辑或保存文件不会自动改变已公开的网站。
