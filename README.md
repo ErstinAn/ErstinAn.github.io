@@ -16,8 +16,8 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
 
 - **Home**：照片、个人简介、联系方式、博士后及工业界求职信息、News、访客区。没有 Research 项目列表和 Blog 摘要。
 - **Research**：三条研究方向、Google Scholar、维护日期及三个 Selected projects：ASGO、Manifold Constraints、Learning Rate Warmup。三项均有配图；ASGO 与 Warmup 可打开原图，Manifold 可打开完整 Poster PDF。
-- **Activities**：报告、演讲和学术活动，当前保留占位。
-- **Blog**：文章目录和每个项目的独立博客模板。
+- **Activities**：Invited Talks and Presentations、Paper Reviewer 两个栏目；报告按时间倒序排列。
+- **Blog**：暂时只显示 Coming soon，文章模板保留在本地供以后写作使用。
 - **CV**：直接打开 `KangAn_CV_1page.pdf`。
 
 News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，不再提供独立内容或侧栏入口。
@@ -36,6 +36,7 @@ News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，�
 | `dist/assets/files/KangAn_CV_1page.pdf` | 原始一页 CV 的完整副本 |
 | `dist/assets/files/profile_pic.jpg` | 你提供的个人照片 |
 | `dist/assets/files/asgo.png` | ASGO 算法关系图，可点击查看原图 |
+| `dist/assets/files/NeurIPS_2025_poster_ASGO.pdf` | ASGO 的 NeurIPS 2025 Poster，项目资源区提供 PDF 链接 |
 | `dist/assets/files/warmup.png` | Warmup 的 ResNet / NanoGPT 实验图，可点击查看原图 |
 | `dist/assets/files/Poster_Demystifying_Manifold_Constraints_in_LLM_Pre_training.pdf` | 你提供的 Manifold 项目 Poster 原始 PDF |
 | `dist/assets/files/manifold-poster-preview.png` | Poster 第一页的完整缩略图，点击打开原始 PDF |
@@ -51,7 +52,7 @@ News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，�
 
 CV 最初使用 `/Users/evelyn/Documents/KangAn_CV_1page.pdf` 的副本。这次首页修改保留了你当前放在网站中的 PDF，没有改写、重新导出或覆盖它。以后更新简历，覆盖 `dist/assets/files/KangAn_CV_1page.pdf` 即可，各页链接保持有效。
 
-可入职时间仍待确认；当前 CV 没有给出预计毕业日期。照片使用你提供的 `profile_pic.jpg`。Research 的三个项目已填写，Activities 仍待填写。首页求职句使用 `.opportunity-highlight` 加粗和着色；简介中的邮箱保留你修改后的纯文本。
+可入职时间仍待确认；当前 CV 没有给出预计毕业日期。照片使用你提供的 `profile_pic.jpg`。Research 的三个项目及 Activities 已填写。首页求职句使用 `.opportunity-highlight` 加粗和着色；简介中的邮箱保留你修改后的纯文本。
 
 ## 如何更新
 
@@ -64,6 +65,8 @@ CV 最初使用 `/Users/evelyn/Documents/KangAn_CV_1page.pdf` 的副本。这次
 每个项目是一个 `<article class="research-item">`，保留 `project-01`、`project-02`、`project-03` 的稳定锚点。修改标题、作者、发表信息、摘要和资源链接。Research 页头的 Google Scholar 指向你的个人主页；项目下方使用 arXiv 提供的 Scholar 论文查询链接（`scholar_lookup?arxiv_id=...`）。这些入口依赖 Scholar 的收录和可用性，不是假造的个人 citation ID。
 
 ASGO 与 Manifold 项目简介根据当前 CV 和对应论文整理，Warmup 根据论文整理，统一用 “We” 描述合作成果。ASGO 的显存与运行开销数字来自 CV，并保留了比较对象和实验范围；不要将 8% overhead 改写为 8% speedup。ASGO 标为 NeurIPS 2025，另两篇分别标为 Preprint 2026 和 Preprint 2025。Warmup 在 arXiv 摘要元数据中误写为 “An Kang”，网站依照论文正文写为 “Kang An”。
+
+2026 年 9 月 30 日保留了你新改的 Manifold 简介和删减后的 Warmup 简介，仅校正拼写、语法和 `update-to-weight ratio` 的术语写法。以后以当前页面为准，不要自动恢复旧版简介。
 
 论文来源：[ASGO](https://arxiv.org/abs/2503.20762)、[Manifold Constraints](https://arxiv.org/abs/2605.04418)、[Warmup](https://arxiv.org/abs/2509.07972)。ASGO 会议信息也由 [NeurIPS 2025 proceedings](https://proceedings.neurips.cc/paper_files/paper/2025/hash/b862a40b617719cde47fa268b8d5c91d-Abstract-Conference.html) 核对。
 
@@ -87,9 +90,15 @@ Manifold Poster 使用原始 PDF 的完整第一页生成 1600 × 1067 像素 PN
 
 ### Activities
 
-编辑 `dist/activities.html` 中的 `.activity-list`。每项填写日期、活动类别、标题、说明以及已有的相关链接；没有链接时删除对应占位即可。
+报告在 `dist/activities.html` 中的 `.activity-list`，维护可见日期与 `<time datetime="YYYY-MM">`，按最新到最早排列。当前条目是 November 2026 / San Francisco、March 2026 / Atlanta、October 2025 / Atlanta。第一条年份经你确认修正为 2026，并标记 Upcoming；报告完成后可删除该标记。
+
+会议时间地点核对自 [2026 INFORMS Annual Meeting](https://www.informs.org/Meetings-Conferences/INFORMS-Conference-Calendar/2026-INFORMS-Annual-Meeting)、[IOS 2026](https://ios2026.isye.gatech.edu/home) 和 [2025 INFORMS Annual Meeting](https://www.informs.org/Meetings-Conferences/INFORMS-Conference-Calendar/2025-INFORMS-Annual-Meeting)。Speaker 身份与审稿经历均来自你提供的信息。
+
+审稿服务在 `.review-list`，分为 Journals 和 Conferences。当前包含 TMLR、JMLR、IEEE Transactions on Information Theory，以及 NeurIPS / ICLR 的 2025、2026 年记录。
 
 ### Blog
+
+当前目录页仅显示 `Coming soon.`，不再展示模板文章链接。开始发布第一篇文章时，替换该提示并建立文章目录。
 
 1. 复制 `dist/blog/project-01.html` 并取一个稳定的文件名。
 2. 修改标题、日期、摘要和 `<article class="article-content">` 中的内容。
