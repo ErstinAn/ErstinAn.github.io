@@ -15,7 +15,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
 ## 页面安排
 
 - **Home**：照片、个人简介、联系方式、博士后及工业界求职信息、News、访客区。没有 Research 项目列表和 Blog 摘要。
-- **Research**：三条研究方向、Google Scholar、维护日期及三个 Selected projects：ASGO、Manifold Constraints、Learning Rate Warmup。ASGO 已有图片，其余两个项目保留左侧配图位置。
+- **Research**：三条研究方向、Google Scholar、维护日期及三个 Selected projects：ASGO、Manifold Constraints、Learning Rate Warmup。三项均有配图；ASGO 与 Warmup 可打开原图，Manifold 可打开完整 Poster PDF。
 - **Activities**：报告、演讲和学术活动，当前保留占位。
 - **Blog**：文章目录和每个项目的独立博客模板。
 - **CV**：直接打开 `KangAn_CV_1page.pdf`。
@@ -36,6 +36,9 @@ News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，�
 | `dist/assets/files/KangAn_CV_1page.pdf` | 原始一页 CV 的完整副本 |
 | `dist/assets/files/profile_pic.jpg` | 你提供的个人照片 |
 | `dist/assets/files/asgo.png` | ASGO 算法关系图，可点击查看原图 |
+| `dist/assets/files/warmup.png` | Warmup 的 ResNet / NanoGPT 实验图，可点击查看原图 |
+| `dist/assets/files/Poster_Demystifying_Manifold_Constraints_in_LLM_Pre_training.pdf` | 你提供的 Manifold 项目 Poster 原始 PDF |
+| `dist/assets/files/manifold-poster-preview.png` | Poster 第一页的完整缩略图，点击打开原始 PDF |
 | `docs/visitor-map.html.txt` | 当前访客地图代码备份，保留原编号以延续统计 |
 | `dist/design-compare.html` | 之前的三种风格对比，供参考 |
 | `.openai/hosting.json` | 静态目录说明，无远程 Site ID |
@@ -78,7 +81,9 @@ ASGO 与 Manifold 项目简介根据当前 CV 和对应论文整理，Warmup 根
 </figure>
 ```
 
-`width`、`height` 应填写图片真实尺寸。项目只在 Research 页维护，不需要同时更新首页列表。后两项的配图尚未选定，所以当前不渲染占位图；桌面上保留图栏，手机上正文使用整行。
+`width`、`height` 应填写图片真实尺寸。项目只在 Research 页维护，不需要同时更新首页列表。图片保持完整比例；桌面采用左图右文，手机上图片与正文使用单列。
+
+Manifold Poster 使用原始 PDF 的完整第一页生成 1600 × 1067 像素 PNG 预览，没有裁切或修改内容。页面加载 PNG，点击缩略图或 `Poster (PDF)` 打开原始矢量 PDF。以后替换 Poster PDF 时，也需同步重新生成 `manifold-poster-preview.png`，避免缩略图与 PDF 不一致。Warmup 使用你提供的 898 × 290 PNG，保留两个实验面板。
 
 ### Activities
 
