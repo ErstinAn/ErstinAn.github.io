@@ -15,7 +15,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
 ## 页面安排
 
 - **Home**：照片、个人简介、联系方式、博士后及工业界求职信息、News、访客区。没有 Research 项目列表和 Blog 摘要。
-- **Research**：研究综述、Google Scholar、维护日期、左图右文的项目列表。
+- **Research**：三条研究方向、Google Scholar、维护日期及三个 Selected projects：ASGO、Manifold Constraints、Learning Rate Warmup。ASGO 已有图片，其余两个项目保留左侧配图位置。
 - **Activities**：报告、演讲和学术活动，当前保留占位。
 - **Blog**：文章目录和每个项目的独立博客模板。
 - **CV**：直接打开 `KangAn_CV_1page.pdf`。
@@ -35,6 +35,7 @@ News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，�
 | `dist/assets/css/style.css` | 全站实验室笔记主题 |
 | `dist/assets/files/KangAn_CV_1page.pdf` | 原始一页 CV 的完整副本 |
 | `dist/assets/files/profile_pic.jpg` | 你提供的个人照片 |
+| `dist/assets/files/asgo.png` | ASGO 算法关系图，可点击查看原图 |
 | `docs/visitor-map.html.txt` | 当前访客地图代码备份，保留原编号以延续统计 |
 | `dist/design-compare.html` | 之前的三种风格对比，供参考 |
 | `.openai/hosting.json` | 静态目录说明，无远程 Site ID |
@@ -47,7 +48,7 @@ News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，�
 
 CV 最初使用 `/Users/evelyn/Documents/KangAn_CV_1page.pdf` 的副本。这次首页修改保留了你当前放在网站中的 PDF，没有改写、重新导出或覆盖它。以后更新简历，覆盖 `dist/assets/files/KangAn_CV_1page.pdf` 即可，各页链接保持有效。
 
-可入职时间仍待确认，CV 的预计毕业时间不等同于入职时间。照片使用你提供的 `profile_pic.jpg`。Research 项目图、项目详情和 Activities 仍待填写，没有虚构成果或活动。
+可入职时间仍待确认；当前 CV 没有给出预计毕业日期。照片使用你提供的 `profile_pic.jpg`。Research 的三个项目已填写，Activities 仍待填写。首页求职句使用 `.opportunity-highlight` 加粗和着色；简介中的邮箱保留你修改后的纯文本。
 
 ## 如何更新
 
@@ -57,22 +58,27 @@ CV 最初使用 `/Users/evelyn/Documents/KangAn_CV_1page.pdf` 的副本。这次
 
 ### Research
 
-每个项目是一个 `<article class="research-item">`。修改标题、作者、发表信息、摘要、个人贡献和三项链接。Research 页头的 Google Scholar 已指向你的个人主页；每个项目的 Scholar 链接需要对应到单篇论文，当前仍待补充。
+每个项目是一个 `<article class="research-item">`，保留 `project-01`、`project-02`、`project-03` 的稳定锚点。修改标题、作者、发表信息、摘要和资源链接。Research 页头的 Google Scholar 指向你的个人主页；项目下方使用 arXiv 提供的 Scholar 论文查询链接（`scholar_lookup?arxiv_id=...`）。这些入口依赖 Scholar 的收录和可用性，不是假造的个人 citation ID。
 
-将论文链接的 `span` 换成真实的 `a`，并移除 `aria-disabled`、`unavailable` 和 `pending`。例如：
+ASGO 与 Manifold 项目简介根据当前 CV 和对应论文整理，Warmup 根据论文整理，统一用 “We” 描述合作成果。ASGO 的显存与运行开销数字来自 CV，并保留了比较对象和实验范围；不要将 8% overhead 改写为 8% speedup。ASGO 标为 NeurIPS 2025，另两篇分别标为 Preprint 2026 和 Preprint 2025。Warmup 在 arXiv 摘要元数据中误写为 “An Kang”，网站依照论文正文写为 “Kang An”。
+
+论文来源：[ASGO](https://arxiv.org/abs/2503.20762)、[Manifold Constraints](https://arxiv.org/abs/2605.04418)、[Warmup](https://arxiv.org/abs/2509.07972)。ASGO 会议信息也由 [NeurIPS 2025 proceedings](https://proceedings.neurips.cc/paper_files/paper/2025/hash/b862a40b617719cde47fa268b8d5c91d-Abstract-Conference.html) 核对。
+
+目前不从 Research 链接未写好的 Blog 模板。文章完成后，在相应 `.project-links` 中加入 Blog 链接。
+
+将新图片放在 `dist/assets/files/`（或按需新建 `dist/assets/images/`），在 `.project-content` 之前加入：
 
 ```html
-<a class="project-link" href="真实的论文地址" target="_blank" rel="noopener noreferrer">arXiv</a>
+<figure class="project-figure">
+  <a href="assets/files/project-02.png" target="_blank" rel="noopener">
+    <img class="project-image" src="assets/files/project-02.png"
+         alt="用一句话解释图片内容" width="640" height="450" loading="lazy">
+  </a>
+  <figcaption>Click to enlarge.</figcaption>
+</figure>
 ```
 
-将图片放在 `dist/assets/images/` 中（按需新建），并将图片占位框替换为：
-
-```html
-<img class="project-image" src="assets/images/project-01.webp"
-     alt="用一句话解释图片内容" width="640" height="450" loading="lazy">
-```
-
-项目只在 Research 页维护，不再需要同时更新首页列表。
+`width`、`height` 应填写图片真实尺寸。项目只在 Research 页维护，不需要同时更新首页列表。后两项的配图尚未选定，所以当前不渲染占位图；桌面上保留图栏，手机上正文使用整行。
 
 ### Activities
 
