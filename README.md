@@ -30,8 +30,8 @@ News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，�
 | `dist/research.html` | 研究综述及项目列表 |
 | `dist/activities.html` | Activities |
 | `dist/blog/index.html` | 博客目录 |
-| `dist/blog/project-01.html` | 第一篇文章模板 |
-| `dist/blog/project-02.html` | 第二篇文章模板 |
+| `templates/blog/project-01.html` | 第一篇文章模板，不部署到网站 |
+| `templates/blog/project-02.html` | 第二篇文章模板，不部署到网站 |
 | `dist/assets/css/style.css` | 全站实验室笔记主题 |
 | `dist/assets/files/KangAn_CV_1page.pdf` | 原始一页 CV 的完整副本 |
 | `dist/assets/files/profile_pic.jpg` | 你提供的个人照片 |
@@ -41,7 +41,8 @@ News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，�
 | `dist/assets/files/Poster_Demystifying_Manifold_Constraints_in_LLM_Pre_training.pdf` | 你提供的 Manifold 项目 Poster 原始 PDF |
 | `dist/assets/files/manifold-poster-preview.png` | Poster 第一页的完整缩略图，点击打开原始 PDF |
 | `docs/visitor-map.html.txt` | 当前访客地图代码备份，保留原编号以延续统计 |
-| `dist/design-compare.html` | 之前的三种风格对比，供参考 |
+| `drafts/design-compare.html` | 本地保留的三种风格对比，不提交或部署 |
+| `.github/workflows/pages.yml` | 推送 main 后自动发布 dist 到 GitHub Pages |
 | `.openai/hosting.json` | 静态目录说明，无远程 Site ID |
 
 `dist/` 中是直接编辑的源码，不是需要重新生成的构建产物。页面不依赖 JavaScript、外部字体或前端框架 CDN；访客地图使用 FlagCounter 在线图片。
@@ -100,7 +101,7 @@ Manifold Poster 使用原始 PDF 的完整第一页生成 1600 × 1067 像素 PN
 
 当前目录页仅显示 `Coming soon.`，不再展示模板文章链接。开始发布第一篇文章时，替换该提示并建立文章目录。
 
-1. 复制 `dist/blog/project-01.html` 并取一个稳定的文件名。
+1. 将 `templates/blog/project-01.html` 复制到 `dist/blog/`，并取一个稳定的文件名（例如 `asgo.html`）。模板中的相对路径按放入 `dist/blog/` 后的目录设计。
 2. 修改标题、日期、摘要和 `<article class="article-content">` 中的内容。
 3. 同步更新文章目录锚点及相关项目链接。
 4. 在 `dist/blog/index.html` 增加文章条目，并在对应 Research 项目中更新 Blog 链接。
@@ -121,6 +122,8 @@ Manifold Poster 使用原始 PDF 的完整第一页生成 1600 × 1067 像素 PN
 
 ## 后续发布
 
-本地 Git 仓库已建立。Git 全局用户为 `ErstinAn`，邮箱为 `ka56@rice.edu`；此前检查 GitHub CLI 尚未登录，没有设置 origin 或推送。以后计划使用 `erstinan.github.io`。
+目标是 GitHub 仓库 `ErstinAn/ErstinAn.github.io` 和网址 `https://erstinan.github.io/`。首次发布需要完成 GitHub CLI 登录、建立仓库并启用 GitHub Pages 的 GitHub Actions 来源。
 
-网站源码位于 `dist/`，正式发布时可以配置 GitHub Actions 上传该目录，或调整到适合分支发布的目录。预览版保留 `noindex, nofollow`；填好正式内容后再移除，并确认简历内容适合公开。
+网站源码仍位于 `dist/`，无安装或构建步骤。`.github/workflows/pages.yml` 仅上传 `dist/`，不会部署根目录的说明文件、博客模板或本地设计草稿。正式的四个页面已移除 `noindex, nofollow`；旧 News 跳转页仍保留 noindex。
+
+今后修改页面或写完 Blog 后，先本地预览，再提交并推送到 `main`。GitHub Actions 会自动更新网站，发布结果可在仓库 Actions 中查看。不要直接在临时部署产物里编辑网页。
