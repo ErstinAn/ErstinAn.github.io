@@ -1,0 +1,47 @@
+<div id="introduction" class="introduction">
+<p>In 2026, the open-weight model Kimi K3 has about <strong>2.8 trillion total parameters</strong>.<sup id="intro-fnref:kimi"><a class="footnote-ref" href="#intro-fn:kimi" aria-label="Reference 1">1</a></sup> Pretraining is still scaling. But data and compute are not unlimited. The training recipe deserves as much attention as model size. Can we get more from pretraining by changing how weights learn, rather than only adding data or compute?</p>
+
+<p>One clue comes from the weights themselves. Kaiyue Wen reported an unusual pattern in Muse Glimmer: the matrices he examined had nearly the same root-mean-square (RMS) value, about <strong>0.006</strong>, across layers and matrix types. RMS measures the typical size of their entries.<sup id="intro-fnref:wen"><a class="footnote-ref" href="#intro-fn:wen" aria-label="Reference 2">2</a></sup></p>
+
+{{include:src/intro-media/post.html}}
+
+<p>The comparison below shows the weight-RMS patterns in Qwen3-8B and Muse Glimmer.</p>
+
+{{include:src/intro-media/weights.html}}
+
+<p>Why might keeping weight scale fixed help a model learn? That's the puzzle we want to explore.</p>
+
+<p>Normalization itself is not new. What matters here is <em>what</em> we normalize. LayerNorm and RMSNorm act on activations—the signals passed through a model. Other methods act on the updates or the weights themselves.<sup id="intro-fnref:layernorm"><a class="footnote-ref" href="#intro-fn:layernorm" aria-label="Reference 3">3</a></sup><sup id="intro-fnref:rmsnorm"><a class="footnote-ref" href="#intro-fn:rmsnorm" aria-label="Reference 4">4</a></sup></p>
+
+<figure id="intro-comparison" class="intro-comparison" aria-labelledby="intro-comparison-title">
+<figcaption id="intro-comparison-title"><strong>What are we normalizing?</strong></figcaption><dl>
+<div class="intro-row"><dt><strong>Activations</strong> — signals inside the model</dt><dd><a href="#intro-fn:layernorm">LayerNorm</a> and <a href="#intro-fn:rmsnorm">RMSNorm</a> normalize activations. <a href="#intro-fn:ngpt">nGPT</a> also normalizes hidden states.<sup id="intro-fnref2:layernorm"><a class="footnote-ref" href="#intro-fn:layernorm" aria-label="Reference 3">3</a></sup><sup id="intro-fnref2:rmsnorm"><a class="footnote-ref" href="#intro-fn:rmsnorm" aria-label="Reference 4">4</a></sup><sup id="intro-fnref:ngpt"><a class="footnote-ref" href="#intro-fn:ngpt" aria-label="Reference 5">5</a></sup></dd></div>
+<div class="intro-row"><dt><strong>Updates</strong> — proposed changes to weights</dt><dd><a href="#intro-fn:muon">Muon</a> approximately orthogonalizes momentum matrices. <a href="#intro-fn:mano">Mano</a> uses row- and column-wise geometry to project and normalize momentum.<sup id="intro-fnref:muon"><a class="footnote-ref" href="#intro-fn:muon" aria-label="Reference 6">6</a></sup><sup id="intro-fnref:mano"><a class="footnote-ref" href="#intro-fn:mano" aria-label="Reference 7">7</a></sup></dd></div>
+<div class="intro-row"><dt><strong>Weights</strong> — parameters learned during training</dt><dd><a href="#intro-fn:ngpt">nGPT</a> normalizes parameter vectors. <a href="#intro-fn:hyperball">MuonH</a> fixes matrix Frobenius norms, while <a href="#intro-fn:sso">SSO</a> fixes spectral norms.<sup id="intro-fnref2:ngpt"><a class="footnote-ref" href="#intro-fn:ngpt" aria-label="Reference 5">5</a></sup><sup id="intro-fnref:hyperball"><a class="footnote-ref" href="#intro-fn:hyperball" aria-label="Reference 8">8</a></sup><sup id="intro-fnref:sso"><a class="footnote-ref" href="#intro-fn:sso" aria-label="Reference 9">9</a></sup></dd></div>
+</dl></figure>
+
+<p>Some methods act on more than one object. Hyperball and SSO, for example, also control update norms.<sup id="intro-fnref2:hyperball"><a class="footnote-ref" href="#intro-fn:hyperball" aria-label="Reference 8">8</a></sup><sup id="intro-fnref2:sso"><a class="footnote-ref" href="#intro-fn:sso" aria-label="Reference 9">9</a></sup></p>
+
+<p>But adding a weight constraint is more than a rescaling trick. The entries can still change, but not in every possible way. Take the Stiefel constraint discussed in Thinking Machines Lab's <em>Modular Manifolds</em>. It keeps a matrix's columns orthonormal: perpendicular to each other and unit length. Such a matrix cannot become rank-deficient and collapse an input direction to zero. This restricts the transformations the layer can learn, not just the size of its weights.<sup id="intro-fnref:modular"><a class="footnote-ref" href="#intro-fn:modular" aria-label="Reference 11">11</a></sup></p>
+
+<p>Different constraints leave different kinds of freedom. When the allowed weights form a smooth manifold, training becomes a manifold-constrained optimization problem. MCSD, for example, provides algorithms for such problems, including Stiefel constraints.<sup id="intro-fnref:mcsd"><a class="footnote-ref" href="#intro-fn:mcsd" aria-label="Reference 10">10</a></sup></p>
+
+<details id="intro-math-note" class="source-detail">
+<summary>From normalization to constrained optimization</summary>
+<div class="intro-math-body">
+<p>Let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="W"><mrow><mi>W</mi></mrow></math> be a weight matrix, and let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\mathcal L(W)"><mrow><mi mathvariant="script">L</mi><mo form="prefix" fence="true" stretchy="false">(</mo><mi>W</mi><mo form="postfix" fence="true" stretchy="false">)</mo></mrow></math> be the training loss. A constraint limits the allowed weights to a set <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\mathcal M"><mrow><mi mathvariant="script">M</mi></mrow></math>:</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="\min_W\mathcal L(W)\quad\longrightarrow\quad\min_{W\in\mathcal M}\mathcal L(W)."><mrow><munder><mo movablelimits="true">min</mo><mi>W</mi></munder><mi mathvariant="script">L</mi><mo form="prefix" fence="true" stretchy="false">(</mo><mi>W</mi><mo form="postfix" fence="true" stretchy="false">)</mo><mspace width="1em"/><mo>⟶</mo><mspace width="1em"/><munder><mo movablelimits="true">min</mo><mrow><mi>W</mi><mo>∈</mo><mi mathvariant="script">M</mi></mrow></munder><mi mathvariant="script">L</mi><mo form="prefix" fence="true" stretchy="false">(</mo><mi>W</mi><mo form="postfix" fence="true" stretchy="false">)</mo><mo>.</mo></mrow></math></div>
+<p>For a matrix <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="W\in\mathbb R^{m\times n}"><mrow><mi>W</mi><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><mi>m</mi><mo>×</mo><mi>n</mi></mrow></msup></mrow></math> with <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="m\ge n"><mrow><mi>m</mi><mo>≥</mo><mi>n</mi></mrow></math>, the Stiefel constraint is</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="W^\top W=I_n."><mrow><msup><mi>W</mi><mo>⊤</mo></msup><mi>W</mi><mo>=</mo><msub><mi>I</mi><mi>n</mi></msub><mo>.</mo></mrow></math></div>
+<p>Its columns are orthonormal, so all <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="n"><mrow><mi>n</mi></mrow></math> singular values are one. The matrix has full column rank and preserves input-vector lengths. A fixed Frobenius norm does not impose these same restrictions.<sup id="intro-fnref2:modular"><a class="footnote-ref" href="#intro-fn:modular" aria-label="Reference 11">11</a></sup></p>
+<p>Many manifold algorithms choose a direction in the tangent space. This space describes changes that preserve the constraint to first order. For the Stiefel manifold, a tangent direction <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="A"><mrow><mi>A</mi></mrow></math> satisfies</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="W^\top A+A^\top W=0."><mrow><msup><mi>W</mi><mo>⊤</mo></msup><mi>A</mi><mo>+</mo><msup><mi>A</mi><mo>⊤</mo></msup><mi>W</mi><mo>=</mo><mn>0</mn><mo>.</mo></mrow></math></div>
+<p>A finite step can still leave the manifold. A retraction maps the candidate weights back to it. Section 0 introduces the update procedure used in our study.<sup id="intro-fnref3:modular"><a class="footnote-ref" href="#intro-fn:modular" aria-label="Reference 11">11</a></sup><sup id="intro-fnref:macro"><a class="footnote-ref" href="#intro-fn:macro" aria-label="Reference 12">12</a></sup></p>
+</div></details>
+
+<p>One question is how to design an optimizer for these constraints. Another question is how these constraints change training.<sup id="intro-fnref2:macro"><a class="footnote-ref" href="#intro-fn:macro" aria-label="Reference 12">12</a></sup> In this blog, we answer the following question to explain the advantages of weight normalization.</p>
+
+<p class="intro-question"><strong><em>How do manifold constraints affect the training dynamics of modern LLMs?</em></strong></p>
+
+<p>We study activation scales and changes in weight direction, in addition to the final loss.<sup id="intro-fnref4:macro"><a class="footnote-ref" href="#intro-fn:macro" aria-label="Reference 12">12</a></sup> First, we define the constrained problem and introduce the optimizer that we use to study it.</p>
+</div>

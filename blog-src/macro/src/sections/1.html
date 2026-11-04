@@ -1,0 +1,70 @@
+<section id="section-1" class="chapter"><div class="chapter-label">Section 1</div>
+<h2 class="chapter-title">Manifold Constraints and RMSNorm</h2>
+<p>The radius analysis in <a class="s1-section-link" href="#section-0">Section 0</a> links weight scale to the output scale of a linear layer. Weight constraints control weight scale through the radius. RMSNorm can adjust activation scale through its learned parameter <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\gamma"><mrow><mi>γ</mi></mrow></math>. Both mechanisms can therefore affect activation scale, but through different parts of the model.<sup id="s1-fnref:s1-scale"><a class="footnote-ref" href="#s1-fn:s1-scale">1</a></sup></p>
+<p>For an input vector <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="x"><mrow><mi>x</mi></mrow></math>, RMSNorm applies a learned scale <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\gamma"><mrow><mi>γ</mi></mrow></math>:</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="\operatorname{RMSNorm}(x)
+=
+\gamma\odot\frac{x}{\operatorname{RMS}(x)}."><mrow><mi mathvariant="normal">RMSNorm</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mi>γ</mi><mo>⊙</mo><mfrac><mrow><mi>x</mi></mrow><mrow><mi mathvariant="normal">RMS</mi><mo>(</mo><mi>x</mi><mo>)</mo></mrow></mfrac><mo>.</mo></mrow></math></div>
+<p>The symbol <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\odot"><mrow><mo>⊙</mo></mrow></math> denotes element-wise multiplication. RMSNorm divides the input by its RMS value, then scales each output coordinate with <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\gamma"><mrow><mi>γ</mi></mrow></math>.</p>
+<p>If we increase the constraint radius, does RMSNorm adjust in response? Figure 1.1 tracks <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\|\gamma_t\|_2"><mrow><msub><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo><mrow><msub><mi>γ</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo></mrow><mn>2</mn></msub></mrow></math> across different constraint radii, where <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="t"><mrow><mi>t</mi></mrow></math> is the training step.</p>
+<figure id="s1-gamma-figure" class="panel s1-figure"><div class="s1-top"><p class="figure-kicker">Figure 1.1 · RMSNorm scale</p><div class="segments" role="group" aria-label="Figure 1.1 · RMSNorm scale"><button id="s1-gamma-method-fro" disabled data-s1-gamma-method="MACRO-fro" aria-pressed="true" aria-controls="s1-gamma-chart">MACRO-fro</button><button id="s1-gamma-method-spec" disabled data-s1-gamma-method="MACRO-spec" aria-pressed="false" aria-controls="s1-gamma-chart">MACRO-spec</button></div></div><div class="s1-gamma-legend"><span>Radius setting</span><div role="group" aria-label="Radius setting"><button id="s1-gamma-radius-0-1" disabled data-s1-gamma-radius="0.1" aria-pressed="false"><i style="border-color:#D93236"></i>0.1</button><button id="s1-gamma-radius-0-5" disabled data-s1-gamma-radius="0.5" aria-pressed="false"><i style="border-color:#DC7D22"></i>0.5</button><button id="s1-gamma-radius-1" disabled data-s1-gamma-radius="1" aria-pressed="false"><i style="border-color:#2E8A45"></i>1</button><button id="s1-gamma-radius-2" disabled data-s1-gamma-radius="2" aria-pressed="false"><i style="border-color:#2679B7"></i>2</button><button id="s1-gamma-radius-5" disabled data-s1-gamma-radius="5" aria-pressed="false"><i style="border-color:#8D61B4"></i>5</button></div></div><p class="s1-axis-title">RMSNorm scale norm ‖γₜ‖₂</p><div id="s1-gamma-chart" class="s1-chart">{{include:src/figures/s1-gamma-svg-780.svg}}</div><p class="s1-helper">Compare the curves at the same training step.</p><p id="s1-gamma-readout" class="s1-readout" aria-live="polite"></p><figcaption id="s1-gamma-caption"><strong>Figure 1.1.</strong> The norm of the learned RMSNorm scale during training, for different constraint radii.</figcaption></figure>
+<p>Larger radii correspond to smaller learned values of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\|\gamma_t\|_2"><mrow><msub><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo><mrow><msub><mi>γ</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo></mrow><mn>2</mn></msub></mrow></math> for both constraints. In other words, RMSNorm adjusts its learned scale in the opposite direction. This compensation can reduce the effect of weight-scale changes on activations.<sup id="s1-fnref2:s1-scale"><a class="footnote-ref" href="#s1-fn:s1-scale">1</a></sup></p>
+<p>The two mechanisms therefore have overlapping roles. We next test the constraints after we remove the standard learnable RMSNorm layers.</p>
+<div class="section-head"><span>02</span><h3 class="question-title">Do constraints help without the standard learnable RMSNorm layers?</h3></div>
+<p>We use a modified Qwen3-like 330M model for this test. We remove all learnable RMSNorm layers. However, we keep RMS normalization after some nonlinear blocks, including attention blocks. We also keep QK-norm. Weight constraints control the activation scale only indirectly.</p>
+<p>We replace SwiGLU with Norm-Gated SwiGLU. It normalizes the Swish branch before the element-wise product. This keeps the output scale of the same order as the output scale of ReLU. The following table shows the ablation architecture.<sup id="s1-fnref:s1-architecture"><a class="footnote-ref" href="#s1-fn:s1-architecture">2</a></sup></p>
+<div class="table-scroll s1-architecture"><table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Standard model</th>
+<th>Modified model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard learnable RMSNorm layers</td>
+<td>Present</td>
+<td>Removed</td>
+</tr>
+<tr>
+<td>Feed-forward activation</td>
+<td>SwiGLU</td>
+<td>Norm-Gated SwiGLU</td>
+</tr>
+<tr>
+<td>Parameter-free RMSNorm after attention</td>
+<td>Absent</td>
+<td>Present</td>
+</tr>
+</tbody>
+</table></div>
+
+<details class="source-detail" id="s1-gate-details">
+<summary>Norm-Gated SwiGLU</summary>
+<p>Let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="X"><mrow><mi>X</mi></mrow></math> be the input, and let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="W_1,W_2"><mrow><msub><mi>W</mi><mn>1</mn></msub><mo>,</mo><msub><mi>W</mi><mn>2</mn></msub></mrow></math> be the two projection matrices. Define the two branches:</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="A=\operatorname{Swish}(XW_1^\top),
+\qquad B=XW_2^\top."><mrow><mi>A</mi><mo>=</mo><mi mathvariant="normal">Swish</mi><mo>(</mo><mi>X</mi><msubsup><mi>W</mi><mn>1</mn><mo>⊤</mo></msubsup><mo>)</mo><mo>,</mo><mspace width="2em"/><mi>B</mi><mo>=</mo><mi>X</mi><msubsup><mi>W</mi><mn>2</mn><mo>⊤</mo></msubsup><mo>.</mo></mrow></math></div>
+<p>Norm-Gated SwiGLU computes</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="Y=\frac{A}{\|A\|_{\mathrm{RMS}}}\odot B."><mrow><mi>Y</mi><mo>=</mo><mfrac><mrow><mi>A</mi></mrow><mrow><msub><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo><mrow><mi>A</mi></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo></mrow><mrow><mi mathvariant="normal">RMS</mi></mrow></msub></mrow></mfrac><mo>⊙</mo><mi>B</mi><mo>.</mo></mrow></math></div>
+<p>The division controls the RMS scale of the Swish branch before multiplication.<sup id="s1-fnref2:s1-architecture"><a class="footnote-ref" href="#s1-fn:s1-architecture">2</a></sup></p>
+</details>
+<p>Figure 1.2 compares final validation loss across learning rates from <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="0.005"><mrow><mn>0.005</mn></mrow></math>. Lower loss is better.</p>
+<figure id="s1-ablation-figure" class="panel s1-figure"><div class="s1-top"><p class="figure-kicker">Figure 1.2 · Modified 330M model</p><div class="s1-legend"><span><i style="border-color:#364854"></i>Muon</span><span><i style="border-color:#007D85"></i>MACRO-fro</span><span><i style="border-color:#885277" class="s1-dashed"></i>MACRO-spec</span></div></div><p class="s1-axis-title">Validation loss</p><div id="s1-ablation-chart" class="s1-chart">{{include:src/figures/s1-ablation-svg-780.svg}}</div><p class="s1-helper">Lower loss is better.</p><p id="s1-ablation-readout" class="s1-readout" aria-live="polite"></p><figcaption id="s1-ablation-caption"><strong>Figure 1.2.</strong> Final validation loss for the modified 330M model. Muon diverges at a learning rate of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="0.03"><mrow><mn>0.03</mn></mrow></math>.</figcaption></figure>
+
+<p>Muon diverges at <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\eta=0.03"><mrow><mi>η</mi><mo>=</mo><mn>0.03</mn></mrow></math>. Both MACRO variants remain finite at all five learning rates. The lowest losses are 2.813 for Muon, 2.758 for MACRO-fro, and 2.739 for MACRO-spec.<sup id="s1-fnref:s1-ablation"><a class="footnote-ref" href="#s1-fn:s1-ablation">3</a></sup></p>
+<p>These results show that weight constraints improve training stability and validation loss in the ablation architecture.</p>
+
+<div class="section-head"><span>03</span><h3 class="question-title">How sensitive is training to the radius?</h3></div>
+<p>Weight constraints help stabilize training, but our modified model still uses parameter-free normalization. The two mechanisms have overlapping roles, rather than one simply replacing the other.<sup id="s1-fnref3:s1-architecture"><a class="footnote-ref" href="#s1-fn:s1-architecture">2</a></sup></p>
+<p>That overlap may offer another benefit when both mechanisms are present. Recall Figure 1.1: larger radii corresponded to smaller learned RMSNorm scales. This compensation suggests that training may be less sensitive to the radius.<sup id="s1-fnref3:s1-scale"><a class="footnote-ref" href="#s1-fn:s1-scale">1</a></sup></p>
+<p>To test this, we return to standard Qwen3 models with learnable RMSNorm. We vary the radius multiplier <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="r"><mrow><mi>r</mi></mrow></math> in the 240M and 600M models. Each method keeps the same learning rate across radius settings.</p>
+<p>Figure 1.3 compares final validation perplexity (PPL) at <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="r=0.5,1,2,5"><mrow><mi>r</mi><mo>=</mo><mn>0.5</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>5</mn></mrow></math>. Lower PPL is better.<sup id="s1-fnref2:s1-radius"><a class="footnote-ref" href="#s1-fn:s1-radius">4</a></sup></p>
+<figure id="s1-radius-figure" class="panel s1-figure"><div class="s1-top"><p class="figure-kicker">Figure 1.3 · Standard architecture</p><div class="segments" role="group" aria-label="Figure 1.3 · Standard architecture"><button id="s1-model-240M" disabled data-s1-model="240M" aria-pressed="true" aria-controls="s1-radius-chart s1-radius-legend">240M</button><button id="s1-model-600M" disabled data-s1-model="600M" aria-pressed="false" aria-controls="s1-radius-chart s1-radius-legend">600M</button></div></div><div id="s1-radius-legend" class="s1-legend s1-radius-legend"><span><i style="border-color:#007D85"></i>MACRO-fro · Learning rate 0.016</span><span><i style="border-color:#885277" class="s1-dashed"></i>MACRO-spec · Learning rate 0.008</span></div><p class="s1-axis-title">Validation perplexity (PPL)</p><div id="s1-radius-chart" class="s1-chart">{{include:src/figures/s1-radius-svg-780.svg}}</div><p class="s1-helper">Lower PPL is better.</p><p id="s1-radius-readout" class="s1-readout" aria-live="polite"></p><figcaption id="s1-radius-caption"><strong>Figure 1.3.</strong> Final validation PPL across radius multipliers in the standard architecture with learnable RMSNorm.</figcaption></figure>
+
+<p>At 600M, PPL changes little over <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="r\in[1,5]"><mrow><mi>r</mi><mo>∈</mo><mo>[</mo><mn>1</mn><mo>,</mo><mn>5</mn><mo>]</mo></mrow></math>. MACRO-fro ranges from 15.296 to 15.329. MACRO-spec ranges from 15.277 to 15.312. At 240M, MACRO-spec changes more than MACRO-fro across the same range.<sup id="s1-fnref:s1-radius"><a class="footnote-ref" href="#s1-fn:s1-radius">4</a></sup></p>
+<p>This result agrees with the compensation in Figure 1.1. Learned RMSNorm scales can offset changes in weight scale. This helps explain why a range of radii gives similar performance.</p>
+<div class="takeaway"><h3 class="takeaway-title">Takeaway</h3>
+<p><strong>Manifold constraints and RMSNorm have aligned roles: constraints improve stability in the ablation architecture, while performance with standard RMSNorm is relatively insensitive to the radius multiplier.</strong></p>
+
+</div></section>

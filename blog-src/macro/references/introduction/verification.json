@@ -1,0 +1,26 @@
+{
+  "checked_utc": "2026-10-29T18:56:30.921181+00:00",
+  "primary_post": "https://x.com/wen_kaiyue/status/2086869377442369620",
+  "post_date": "2026-08-10",
+  "official_verification": "X publish.twitter.com oEmbed author, text, canonical link and date verified; direct X web fetch returned 403.",
+  "scale_reply": "https://x.com/wen_kaiyue/status/2086869381556974012",
+  "qwen_comparison_reply": "https://x.com/wen_kaiyue/status/2086869383674986890",
+  "media": {
+    "muse-glimmer-weight-rms.png": "https://pbs.twimg.com/media/HPYJ9qsWsAAZ64-.png?name=orig",
+    "qwen3-weight-rms.png": "https://pbs.twimg.com/media/HPYMf9CXwAAmteS.png?name=orig",
+    "yue-figure2.svg": "https://arxiv.org/html/2504.13837v5/simpleRL_coverage_main.svg"
+  },
+  "yue_paper": "https://arxiv.org/html/2504.13837v5#S2.F2",
+  "visual_review": "Viewed both full original PNG charts, full Figure 2 SVG rendered to PNG, and supplied slide 7.",
+  "chart_limits": "Wen images are checkpoint weight statistics, not training trajectories. Original plot scales differ. No raw points inferred or recreated.",
+  "recommendation": "Lead with the observed weight-scale pattern; one full-width Muse image, Qwen comparison behind a disclosure. Yue Qwen2.5-7B/AIME24 panel can be secondary evidence. Preserve original axes and attribution.",
+  "page_modified": false,
+  "sha256": {
+    "muse-glimmer-weight-rms.png": "d774cc9a755ded2b7cdb8153a9a3d0f9248d34bbc00786a26a4af28e15a9d884",
+    "qwen3-weight-rms.png": "70ec9c01669258a2475be1041b58a51f0ee18d29b278c1c86884bc6fd4185678",
+    "yue-figure2.svg": "408381de34bfbf22e1119f58b395236629996be0ebb1648c4848b56730b873c2",
+    "wen-official-oembed.json": "d334fecc156e3a0bdc4eefae86a40f11be2f7a0d82ea14ebbe4c56bc8baab367",
+    "wen-qwen-official-oembed.json": "fb9e464bcbd3c8237b917f569e85c05dce31560be721b72859cdea75f3ab915c",
+    "wen-scale-official-oembed.json": "d8418eba57f3081d01b6b518b667d4d7114d57ded682526ff7e536b3b772bdfe"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "metric": "final_validation_loss_increase",
+  "definition": "L_val_BF16 - L_val_FP32",
+  "lower_is_better": true,
+  "source": {
+    "filename": "PostDoc_presentation(1).pdf",
+    "page_1_indexed": 45,
+    "location": "Final validation-loss increase table",
+    "paper": "arXiv:2605.04418v2, Section 4.3 (reported gaps in main text)"
+  },
+  "precision_study_seed": 1,
+  "seed_source": "paper v2 Appendix D.3",
+  "uncertainty": null,
+  "raw_timeseries_available": false,
+  "records": [
+    {
+      "model": "240M",
+      "optimizer": "Muon",
+      "delta_val_loss": 1.147
+    },
+    {
+      "model": "240M",
+      "optimizer": "MACRO-fro",
+      "delta_val_loss": 0.0172
+    },
+    {
+      "model": "240M",
+      "optimizer": "MACRO-spec",
+      "delta_val_loss": 0.0317
+    },
+    {
+      "model": "600M",
+      "optimizer": "Muon",
+      "delta_val_loss": 0.9394
+    },
+    {
+      "model": "600M",
+      "optimizer": "MACRO-fro",
+      "delta_val_loss": 0.0239
+    },
+    {
+      "model": "600M",
+      "optimizer": "MACRO-spec",
+      "delta_val_loss": 0.0476
+    }
+  ],
+  "notes": [
+    "These are reported final validation-loss differences, not PPL, training loss, percentages or multi-seed averages.",
+    "Do not reconstruct absolute loss or training trajectories from these differences.",
+    "Preserve this source convention; see SOURCE_NOTES.md for the Table 13 consistency question."
+  ]
+}

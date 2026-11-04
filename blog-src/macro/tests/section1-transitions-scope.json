@@ -1,0 +1,19 @@
+{
+  "scope": "Section 1 transitions v2",
+  "reviewed_paragraphs_exact": 10,
+  "protected_region_sha256": {
+    "figure11": "4dccebc47be88153e82a5fea0f288fc6604a5fc6054c973badd2b50ffbe742d0",
+    "ablation": "060b518920769cb6312146144dbad339126d89427096b236ca50374c191379d9",
+    "figure13_and_ending": "bdaf06dfbdb1f75549f55cb4ffa0d922a242ef20344a12cbdfe5391834688c41"
+  },
+  "existing_ids_preserved": 30,
+  "new_reference_ids": [
+    "s1-fnref2:s1-radius",
+    "s1-fnref3:s1-architecture",
+    "s1-fnref3:s1-scale"
+  ],
+  "browser_tests": "not run; previous local acceptance arrangement retained",
+  "bibliography_text_changed": false,
+  "final_html_sha256": "4ebaf8b5b3308d8e04431ad12cf93545310f6b0089489b88fc185dc7413cbab4",
+  "interaction_states_compared": 33
+}

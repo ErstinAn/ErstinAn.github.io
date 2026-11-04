@@ -2,3 +2,7 @@
 __pycache__/
 *.log
 drafts/
+blog-src/macro/index.html
+blog-src/macro/tests/results.json
+blog-src/macro/tests/results.txt
+blog-src/macro/tests/introduction-results.json

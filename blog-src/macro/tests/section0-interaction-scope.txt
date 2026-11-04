@@ -1,0 +1,12 @@
+PASS initial controls and readouts match the approved page; Section 4 controls enable independently
+PASS Sources starts closed and footnote navigation reveals only the referenced disclosure
+PASS all standard model states retain reported ± values and correct missing rows
+PASS all efficiency metrics show raw values, direction helper and a Muon reference
+PASS both warmup models expose all tested settings and slide values without changing other figures
+PASS events from a nested SVG shape reach its accessible parent target
+PASS chapter and rotation controls match the approved interaction snapshots
+PASS resize at narrow widths keeps finite SVGs and existing controls unchanged
+PASS fixed article text/captions and shared sources are not rewritten
+PASS: all 33 interaction states match the actual before-page outside the revised Proposition definitions.
+
+Compared actual local before/after HTML in Node DOM contract; not browser rendering.

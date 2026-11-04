@@ -1,0 +1,39 @@
+{
+  "scope": "Sections 3\u20134 draft and blueprint v2",
+  "before_directory": "/var/folders/6b/1vmbfxc97qsf97c6y7gxrz1m0000gn/T/macro-sections34-v2-fmjpk94y",
+  "before_html_sha256": "c4da5d31719bda717f377b80b87c2903239e8dc5936f0d61ad9cbeeddf628ab9",
+  "exact_main_paragraphs": {
+    "3": 27,
+    "4": 11
+  },
+  "exact_disclosure_paragraphs": {
+    "s3-rounding-thresholds": 5,
+    "s3-optimizer-ratios": 5,
+    "s3-cancellation-model": 10,
+    "s4-benchmark-details": 6
+  },
+  "preserved_source_regions_sha256": {
+    "3.1": "1b2f3fb18bf61eb82bc99453e8c434ade618647d1321027d98dfde0af75e8781",
+    "3.2": "123498366362275ceb1f34c1b95d15a24a55b9ac8ea75e22a3fcaabf750b5e16",
+    "3.3": "9bab1013938dd823c582ca5864e0098e87b23bd84b7ff4ebc2abeff72a9153ae",
+    "4.1": "9e987983094536b7bf6a1c9f7fdf0ae5d358304db4e037a53be673af4055f4b6",
+    "4.2": "6331cf94465546e8797c3bf95def00bf2ba52ac4196cfee6a67c2950eb25f55a",
+    "4.3": "d41756d5cee0655b7d5a5b997911d962cc0cddf6063ccd41ba0946b4b5cff472",
+    "validation-table": "1e7c07bb5512b9f945af0e1913da26d4c237381b63619bb6e1d63f5871c4f2ce"
+  },
+  "figure33_only_change": "<p id=\"model-metric-help\" class=\"small\">Retention measures absolute-update magnitude. Cancellation counts coordinates.</p>",
+  "numeric_checks": "validation gaps, PPL ordering, E2E values and 1.6% increase, warmup minima agree with existing data",
+  "browser_tests": "not run; prior local acceptance arrangement retained",
+  "after_html_sha256": "f62b6f060508548d758c2a6ad3bf1fe21c28f170959e16661555ede7660742af",
+  "other_sections_byte_identical": [
+    0,
+    1,
+    2
+  ],
+  "scripts_and_embedded_data_byte_identical": true,
+  "outside_revised_chapters_sources_and_appended_styles_byte_identical": true,
+  "methods_and_data_byte_identical": true,
+  "all_six_figures_preserved_except_requested_helper": true,
+  "validation_table_byte_identical": true,
+  "mathml_xml_valid": true
+}

@@ -1,0 +1,84 @@
+{
+  "scope": "Finite positive normal BF16 weights and modest signed increments; direct nearest-even quantization of the candidate value. Not a full training kernel simulation.",
+  "source": "slide 46 for the two examples; remaining scalar cases derived from the same BF16 nearest-even rule, including Appendix C.5.1 boundary handling.",
+  "cases": [
+    {
+      "id": "default_cancel",
+      "w": 1.5,
+      "delta": 0.002,
+      "expected_stored_value": 1.5,
+      "expected_realized_delta": 0.0
+    },
+    {
+      "id": "survive_and_change_magnitude",
+      "w": 1.5,
+      "delta": 0.004,
+      "expected_stored_value": 1.5078125,
+      "expected_realized_delta": 0.0078125
+    },
+    {
+      "id": "negative_cancel",
+      "w": 1.5,
+      "delta": -0.002,
+      "expected_stored_value": 1.5,
+      "expected_realized_delta": 0.0
+    },
+    {
+      "id": "negative_survive",
+      "w": 1.5,
+      "delta": -0.004,
+      "expected_stored_value": 1.4921875,
+      "expected_realized_delta": -0.0078125
+    },
+    {
+      "id": "even_tie_round_down",
+      "w": 1.5,
+      "delta": 0.00390625,
+      "expected_stored_value": 1.5,
+      "expected_realized_delta": 0.0
+    },
+    {
+      "id": "odd_tie_round_up",
+      "w": 1.5078125,
+      "delta": 0.00390625,
+      "expected_stored_value": 1.515625,
+      "expected_realized_delta": 0.0078125
+    },
+    {
+      "id": "smaller_weight",
+      "w": 0.75,
+      "delta": 0.004,
+      "expected_stored_value": 0.75390625,
+      "expected_realized_delta": 0.00390625
+    },
+    {
+      "id": "larger_weight",
+      "w": 3.0,
+      "delta": 0.004,
+      "expected_stored_value": 3.0,
+      "expected_realized_delta": 0.0
+    },
+    {
+      "id": "power_of_two_toward_zero",
+      "w": 1.0,
+      "delta": -0.003,
+      "expected_stored_value": 0.99609375,
+      "expected_realized_delta": -0.00390625
+    },
+    {
+      "id": "power_of_two_away_from_zero",
+      "w": 1.0,
+      "delta": 0.003,
+      "expected_stored_value": 1.0,
+      "expected_realized_delta": 0.0
+    }
+  ],
+  "threshold_model": {
+    "source_slide": 65,
+    "tau": 0.00196078431372549,
+    "rho_over_tau": 1,
+    "expected_p_drop": 0.5,
+    "expected_retained_absolute_update_fraction": 0.7071067811865475,
+    "note": "Threshold model, not actual BF16 rounding."
+  }
+}

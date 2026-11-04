@@ -1,6 +1,6 @@
 # Kang An 的个人主页模板
 
-本版采用你选中的第三种“实验室笔记”风格：浅灰窄侧栏、白色正文区、克制的蓝紫链接、等宽标题和元信息。使用原生 HTML + CSS，没有框架、安装依赖或构建步骤。网站通过 GitHub Pages 发布，地址为 <https://erstinan.github.io/>。
+本版采用你选中的第三种“实验室笔记”风格：浅灰窄侧栏、白色正文区、克制的蓝紫链接、等宽标题和元信息。主站使用原生 HTML + CSS，没有前端框架或安装依赖；MACRO 交互博客有独立的本地 JavaScript 和 Python 导出步骤。网站通过 GitHub Pages 发布，地址为 <https://erstinan.github.io/>。
 
 ## 查看
 
@@ -17,7 +17,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
 - **Home**：照片、个人简介、联系方式、博士后及工业界求职信息、News、访客区。没有 Research 项目列表和 Blog 摘要。
 - **Research**：三条研究方向、Google Scholar、维护日期及三个 Selected projects：ASGO、Manifold Constraints、Learning Rate Warmup。三项均有配图；ASGO 与 Warmup 可打开原图，Manifold 可打开完整 Poster PDF。
 - **Activities**：Invited Talks and Presentations、Paper Reviewer 两个栏目；报告按时间倒序排列。
-- **Blog**：暂时只显示 Coming soon，文章模板保留在本地供以后写作使用。
+- **Blog**：文章目录，已收录 MACRO 的五章交互文章 *Demystifying Manifold Constraints in LLM Pre-training*。Research 中的对应项目也提供 Blog 入口。
 - **CV**：直接打开 `KangAn_CV_1page.pdf`。
 
 News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，不再提供独立内容或侧栏入口。
@@ -30,6 +30,9 @@ News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，�
 | `dist/research.html` | 研究综述及项目列表 |
 | `dist/activities.html` | Activities |
 | `dist/blog/index.html` | 博客目录 |
+| `dist/blog/macro/index.html` | 生成的 MACRO 文章，不直接编辑 |
+| `blog-src/macro/` | MACRO 正文、图表数据、图片和测试 |
+| `scripts/build-macro-blog.py` | 将审阅过的原稿导出为网站文章 |
 | `templates/blog/project-01.html` | 第一篇文章模板，不部署到网站 |
 | `templates/blog/project-02.html` | 第二篇文章模板，不部署到网站 |
 | `dist/assets/css/style.css` | 全站实验室笔记主题 |
@@ -45,7 +48,7 @@ News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，�
 | `.github/workflows/pages.yml` | 推送 main 后自动发布 dist 到 GitHub Pages |
 | `.openai/hosting.json` | 静态目录说明，无远程 Site ID |
 
-`dist/` 中是直接编辑的源码，不是需要重新生成的构建产物。页面不依赖 JavaScript、外部字体或前端框架 CDN；访客地图使用 FlagCounter 在线图片。
+主站页面直接在 `dist/` 编辑；唯一例外是 `dist/blog/macro/index.html`，它由 `blog-src/macro/` 生成。MACRO 的 JavaScript、数据、图片和 MathML 公式全部内嵌，不依赖外部字体、公式服务或 CDN。访客地图使用 FlagCounter 在线图片。
 
 ## 已填的真实信息
 
@@ -71,7 +74,7 @@ ASGO 与 Manifold 项目简介根据当前 CV 和对应论文整理，Warmup 根
 
 论文来源：[ASGO](https://arxiv.org/abs/2503.20762)、[Manifold Constraints](https://arxiv.org/abs/2605.04418)、[Warmup](https://arxiv.org/abs/2509.07972)。ASGO 会议信息也由 [NeurIPS 2025 proceedings](https://proceedings.neurips.cc/paper_files/paper/2025/hash/b862a40b617719cde47fa268b8d5c91d-Abstract-Conference.html) 核对。
 
-目前不从 Research 链接未写好的 Blog 模板。文章完成后，在相应 `.project-links` 中加入 Blog 链接。
+Manifold 项目已链接 `blog/macro/`。其他项目继续保留未发布状态；完成文章后再添加对应 Blog 链接。
 
 将新图片放在 `dist/assets/files/`（或按需新建 `dist/assets/images/`），在 `.project-content` 之前加入：
 
@@ -99,7 +102,20 @@ Manifold Poster 使用原始 PDF 的完整第一页生成 1600 × 1067 像素 PN
 
 ### Blog
 
-当前目录页仅显示 `Coming soon.`，不再展示模板文章链接。开始发布第一篇文章时，替换该提示并建立文章目录。
+MACRO 已发布到 <https://erstinan.github.io/blog/macro/>，源文件取自用户交付目录的 `latest/` 版本。文章保留独立阅读版式，不加载主站侧栏样式。导出脚本只添加 Kang An / Blog 返回导航和 canonical URL，正文、公式、图表与交互逻辑保持原样。
+
+修改这篇文章时，编辑 `blog-src/macro/src/` 对应章节或脚本；图片与数据位置见 [源码说明](blog-src/macro/README.md)。然后在项目根目录运行：
+
+```sh
+python3 blog-src/macro/build.py
+python3 blog-src/macro/tests/run.py
+python3 scripts/build-macro-blog.py
+python3 scripts/build-macro-blog.py --check
+```
+
+需要 Python 3.9+ 和 Node.js，无 npm/pip 依赖。测试包含已审阅文案与图表的保护快照，正文修改后可能需要有意更新对应基准；不要仅为让测试通过而删除断言。测试生成的本地报告不提交，网站导出的 HTML 则提交到 Git。发布工作流会检查导出是否过期。最后通过本地 HTTP 预览确认公式、图表和窄屏布局。
+
+发布其他普通 HTML 文章：
 
 1. 将 `templates/blog/project-01.html` 复制到 `dist/blog/`，并取一个稳定的文件名（例如 `asgo.html`）。模板中的相对路径按放入 `dist/blog/` 后的目录设计。
 2. 修改标题、日期、摘要和 `<article class="article-content">` 中的内容。
@@ -110,7 +126,7 @@ Manifold Poster 使用原始 PDF 的完整第一页生成 1600 × 1067 像素 PN
 
 ### 导航
 
-所有页面的侧栏直接写在 HTML 中。改动菜单时需同步首页、Research、Activities、博客目录和文章页。博客目录下的资源使用 `../` 相对路径。
+主站侧栏直接写在各 HTML 中。改动菜单时需同步首页、Research、Activities、博客目录和使用侧栏的文章。MACRO 采用独立阅读页，返回导航由导出脚本维护。博客目录下的资源使用 `../` 相对路径，`blog/macro/` 下返回首页使用 `../../`。
 
 ## 访客统计
 
@@ -124,14 +140,14 @@ Manifold Poster 使用原始 PDF 的完整第一页生成 1600 × 1067 像素 PN
 
 源码仓库为 <https://github.com/ErstinAn/ErstinAn.github.io>，公开网址为 <https://erstinan.github.io/>。GitHub CLI 已登录 ErstinAn，GitHub Pages 使用 GitHub Actions 发布。
 
-网站源码仍位于 `dist/`，无安装或构建步骤。`.github/workflows/pages.yml` 仅上传 `dist/`，不会部署根目录的说明文件、博客模板或本地设计草稿。正式的四个页面已移除 `noindex, nofollow`；旧 News 跳转页仍保留 noindex。
+主站页面位于 `dist/`；MACRO 文章的维护源码位于 `blog-src/macro/`，修改后需先导出。`.github/workflows/pages.yml` 仅上传 `dist/`，不会部署根目录的说明文件、博客模板或本地设计草稿。正式的四个页面已移除 `noindex, nofollow`；旧 News 跳转页仍保留 noindex。
 
 今后修改页面或写完 Blog 后，先本地预览，再提交并推送到 `main`。GitHub Actions 会自动更新网站，发布结果可在仓库 Actions 中查看。不要直接在临时部署产物里编辑网页。
 
 日常更新页面、简历或图片后，在项目目录执行：
 
 ```sh
-git add dist
+git add dist blog-src scripts
 git commit -m "Update homepage"
 git push
 ```

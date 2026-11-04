@@ -1,0 +1,198 @@
+<section id="section-2" class="chapter"><div class="chapter-label">Section 2</div>
+<h2 class="chapter-title">Manifold Constraints and Weight Decay</h2>
+<p>RMSNorm is not the only part of the training recipe that controls scale. Weight decay acts directly on the weights. If we now fix their norm, what is left for weight decay to do?</p>
+<div class="section-head"><span>01</span><h3 class="question-title">How does weight decay affect rotation?</h3></div>
+<p>To see the connection, consider one weight matrix as a vector <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="w_t"><mrow><msub><mi>w</mi><mi>t</mi></msub></mrow></math>. Let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="s_t"><mrow><msub><mi>s</mi><mi>t</mi></msub></mrow></math> be its optimizer increment, including the learning rate but not weight decay. The update is</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="w_{t+1}=(1-\eta\lambda)w_t+s_t,"><mrow><msub><mi>w</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><mrow><mo form="prefix" fence="true" stretchy="false" symmetric="true">(</mo><mrow><mn>1</mn><mo>−</mo><mi>η</mi><mi>λ</mi></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">)</mo></mrow><msub><mi>w</mi><mi>t</mi></msub><mo>+</mo><msub><mi>s</mi><mi>t</mi></msub><mo>,</mo></mrow></math></div>
+<p>where <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\eta"><mrow><mi>η</mi></mrow></math> is the learning rate and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\lambda"><mrow><mi>λ</mi></mrow></math> is the decay coefficient.</p>
+<p>The increment can change both the size and direction of the weights. We split it into a radial component <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="s_t^\parallel"><mrow><msubsup><mi>s</mi><mi>t</mi><mo>∥</mo></msubsup></mrow></math>, parallel to <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="w_t"><mrow><msub><mi>w</mi><mi>t</mi></msub></mrow></math>, and a tangential component <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="s_t^\perp"><mrow><msubsup><mi>s</mi><mi>t</mi><mo>⊥</mo></msubsup></mrow></math>, perpendicular to it. Weight decay combines with the radial component. Figure 2.1 shows the same step before and after this split.</p>
+<figure id="s2-geometry-figure" class="panel s2-figure s2-geometry-v2"><p class="figure-kicker">Figure 2.1 · Radial and tangential updates</p><div class="s2-geometry-pair"><div class="s2-geometry-view"><h4>(a) Optimizer update and decay</h4>{{include:src/figures/s2-geometry-a-360.svg}}<p class="s2-geometry-explanation">Add the optimizer update and the weight-decay update.</p></div><div class="s2-geometry-view"><h4>(b) Radial and tangential components</h4>{{include:src/figures/s2-geometry-b-360.svg}}<p class="s2-geometry-explanation">Combine the radial component with weight decay. Keep the tangential component unchanged.</p></div></div><figcaption><strong>Figure 2.1.</strong> Two views of the same step. Weight decay combines with the radial component. The arc marks the initial norm.</figcaption></figure>
+<p>The tangential component turns the weight vector. A finite tangential step can also increase its norm. For a small total step, the rotation angle in radians is approximately</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="\theta_t\approx\frac{\|s_t^\perp\|_2}{\|w_t\|_2}."><mrow><msub><mi>θ</mi><mi>t</mi></msub><mo>≈</mo><mfrac><mrow><msub><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true">‖</mo><mrow><mrow><msubsup><mi>s</mi><mi>t</mi><mo>⊥</mo></msubsup></mrow></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">‖</mo></mrow><mn>2</mn></msub></mrow><mrow><msub><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true">‖</mo><mrow><msub><mi>w</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">‖</mo></mrow><mn>2</mn></msub></mrow></mfrac><mo>.</mo></mrow></math></div>
+<p>The same tangential update gives a larger angle when the weight norm is smaller. So weight scale also affects how far the weights turn.</p>
+<p>What happens to that scale over many steps? In fixed-learning-rate experiments, Kosson et al. observed stable weight norms and average rotation after an initial transient.<sup id="s2-fnref:rotation"><a class="footnote-ref" href="#s2-fn:rotation">2</a></sup></p>
+<p>A simple random-update model illustrates how this balance can form. Under its assumptions, the expected squared weight norm approaches a fixed level. This is a balance that develops during training, not a norm enforced after every step.</p>
+<details id="s2-norm-equilibrium" class="source-detail"><summary>A simple model of norm equilibrium</summary>
+<p>We use a random-update model to explain the balance. The model uses a fixed learning rate and a fixed decay coefficient.</p>
+<p>Let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="s_t"><mrow><msub><mi>s</mi><mi>t</mi></msub></mrow></math> be the update before weight decay. The weight update is</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="w_{t+1}=bw_t+s_t,
+\qquad b=1-\eta\lambda,
+\qquad 0&lt;b&lt;1."><mrow><msub><mi>w</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><mi>b</mi><msub><mi>w</mi><mi>t</mi></msub><mo>+</mo><msub><mi>s</mi><mi>t</mi></msub><mo>,</mo><mspace width="2em"/><mi>b</mi><mo>=</mo><mn>1</mn><mo>−</mo><mi>η</mi><mi>λ</mi><mo>,</mo><mspace width="2em"/><mn>0</mn><mo>&lt;</mo><mi>b</mi><mo>&lt;</mo><mn>1</mn><mo>.</mo></mrow></math></div>
+<p>The model uses two conditions at every step:</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="\mathbb E\langle w_t,s_t\rangle=0,
+\qquad
+\mathbb E\|s_t\|_2^2=S^2&lt;\infty."><mrow><mi mathvariant="double-struck">E</mi><mrow><mo form="prefix" fence="true" stretchy="false" symmetric="true">⟨</mo><mrow><msub><mi>w</mi><mi>t</mi></msub><mo>,</mo><msub><mi>s</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">⟩</mo></mrow><mo>=</mo><mn>0</mn><mo>,</mo><mspace width="2em"/><mi mathvariant="double-struck">E</mi><msubsup><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo><mrow><msub><mi>s</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo></mrow><mn>2</mn><mn>2</mn></msubsup><mo>=</mo><msup><mi>S</mi><mn>2</mn></msup><mo>&lt;</mo><mi>∞</mi><mo>.</mo></mrow></math></div>
+<p>The expectation is over different sequences of random updates. The first condition sets the expected inner product to zero. Individual updates need not be perpendicular to the weight.</p>
+<p>The second condition keeps the expected value of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\|s_t\|_2^2"><mrow><msubsup><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo><mrow><msub><mi>s</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo></mrow><mn>2</mn><mn>2</mn></msubsup></mrow></math> constant across steps. Individual update sizes can still change.</p>
+<p>Let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="Q_t=\mathbb E\|w_t\|_2^2"><mrow><msub><mi>Q</mi><mi>t</mi></msub><mo>=</mo><mi mathvariant="double-struck">E</mi><msubsup><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo><mrow><msub><mi>w</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo></mrow><mn>2</mn><mn>2</mn></msubsup></mrow></math>, with <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="Q_0&lt;\infty"><mrow><msub><mi>Q</mi><mn>0</mn></msub><mo>&lt;</mo><mi>∞</mi></mrow></math>. The update equation gives</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="\begin{aligned}
+Q_{t+1}
+&amp;=b^2Q_t+2b\,\mathbb E\langle w_t,s_t\rangle
+  +\mathbb E\|s_t\|_2^2\\
+&amp;=b^2Q_t+S^2.
+\end{aligned}"><mrow><mtable columnspacing="0.25em" rowspacing="0.35em"><mtr><mtd columnalign="right"><mrow><msub><mi>Q</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd columnalign="left"><mrow><mo>=</mo><msup><mi>b</mi><mn>2</mn></msup><msub><mi>Q</mi><mi>t</mi></msub><mo>+</mo><mn>2</mn><mi>b</mi><mspace width="0.167em"/><mi mathvariant="double-struck">E</mi><mrow><mo form="prefix" fence="true" stretchy="false" symmetric="true">⟨</mo><mrow><msub><mi>w</mi><mi>t</mi></msub><mo>,</mo><msub><mi>s</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">⟩</mo></mrow><mo>+</mo><mi mathvariant="double-struck">E</mi><msubsup><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo><mrow><msub><mi>s</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo></mrow><mn>2</mn><mn>2</mn></msubsup></mrow></mtd></mtr><mtr><mtd columnalign="right"><mrow></mrow></mtd><mtd columnalign="left"><mrow><mo>=</mo><msup><mi>b</mi><mn>2</mn></msup><msub><mi>Q</mi><mi>t</mi></msub><mo>+</mo><msup><mi>S</mi><mn>2</mn></msup><mo>.</mo></mrow></mtd></mtr></mtable></mrow></math></div>
+<p>Thus,</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="Q_{t+1}-Q_t
+=
+\underbrace{S^2}_{\text{increase from updates}}
+-
+\underbrace{(1-b^2)Q_t}_{\text{decrease from decay}}."><mrow><msub><mi>Q</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>−</mo><msub><mi>Q</mi><mi>t</mi></msub><mo>=</mo><munder><munder accentunder="true" data-s2-underbrace="true"><mrow><msup><mi>S</mi><mn>2</mn></msup></mrow><mo stretchy="true">⏟</mo></munder><mrow><mtext>increase from updates</mtext></mrow></munder><mo>−</mo><munder><munder accentunder="true" data-s2-underbrace="true"><mrow><mrow><mo form="prefix" fence="true" stretchy="false" symmetric="true">(</mo><mrow><mn>1</mn><mo>−</mo><msup><mi>b</mi><mn>2</mn></msup></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">)</mo></mrow><msub><mi>Q</mi><mi>t</mi></msub></mrow><mo stretchy="true">⏟</mo></munder><mrow><mtext>decrease from decay</mtext></mrow></munder><mo>.</mo></mrow></math></div>
+<p>The balance point is</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="Q_*=\frac{S^2}{1-b^2}."><mrow><msub><mi>Q</mi><mo>*</mo></msub><mo>=</mo><mfrac><mrow><msup><mi>S</mi><mn>2</mn></msup></mrow><mrow><mn>1</mn><mo>−</mo><msup><mi>b</mi><mn>2</mn></msup></mrow></mfrac><mo>.</mo></mrow></math></div>
+<p>When <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="Q_t&lt;Q_*"><mrow><msub><mi>Q</mi><mi>t</mi></msub><mo>&lt;</mo><msub><mi>Q</mi><mo>*</mo></msub></mrow></math>, the increase is more than the decrease. When <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="Q_t&gt;Q_*"><mrow><msub><mi>Q</mi><mi>t</mi></msub><mo>&gt;</mo><msub><mi>Q</mi><mo>*</mo></msub></mrow></math>, the decrease is more than the increase.</p>
+<p>The difference from the balance point satisfies</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="Q_t-Q_*=b^{2t}(Q_0-Q_*)."><mrow><msub><mi>Q</mi><mi>t</mi></msub><mo>−</mo><msub><mi>Q</mi><mo>*</mo></msub><mo>=</mo><msup><mi>b</mi><mrow><mn>2</mn><mi>t</mi></mrow></msup><mrow><mo form="prefix" fence="true" stretchy="false" symmetric="true">(</mo><mrow><msub><mi>Q</mi><mn>0</mn></msub><mo>−</mo><msub><mi>Q</mi><mo>*</mo></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">)</mo></mrow><mo>.</mo></mrow></math></div>
+<p>Because <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="0&lt;b&lt;1"><mrow><mn>0</mn><mo>&lt;</mo><mi>b</mi><mo>&lt;</mo><mn>1</mn></mrow></math>, the absolute difference decreases to zero. This result concerns the expected squared norm. The norm can still change at each step.</p>
+</details>
+<p>MACRO takes a different route: it fixes the required norm after each update. Recall from <a class="s2-section-link" href="#section-0">Section 0</a> that it also scales the proposed update with this norm. Together, these choices give us a more direct way to control rotation.</p>
+<div class="section-head"><span>02</span><h3 class="question-title">How does the Frobenius constraint control rotation?</h3></div>
+<p>Start with MACRO-fro. It keeps <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\|W_t\|_F=R"><mrow><msub><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo><mrow><msub><mi>W</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo></mrow><mi>F</mi></msub><mo>=</mo><mi>R</mi></mrow></math> and scales the proposed step to approximately <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\eta_tR"><mrow><msub><mi>η</mi><mi>t</mi></msub><mi>R</mi></mrow></math> in the same norm. Retraction restores the radius without changing the candidate's direction.</p>
+<p>We measure the angle between consecutive weight matrices, treating each matrix as a vector. For a small step that is nearly perpendicular to <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="W_t"><mrow><msub><mi>W</mi><mi>t</mi></msub></mrow></math>,</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="\theta_t^{\mathrm{fro}}\approx\frac{\eta_tR}{R}=\eta_t."><mrow><msubsup><mi>θ</mi><mi>t</mi><mrow><mi mathvariant="normal">fro</mi></mrow></msubsup><mo>≈</mo><mfrac><mrow><msub><mi>η</mi><mi>t</mi></msub><mi>R</mi></mrow><mrow><mi>R</mi></mrow></mfrac><mo>=</mo><msub><mi>η</mi><mi>t</mi></msub><mo>.</mo></mrow></math></div>
+<p>The radius cancels. Under these conditions, a fixed step size gives a nearly fixed angle.<sup id="s2-fnref:fro"><a class="footnote-ref" href="#s2-fn:fro">3</a></sup> Figure 2.2 checks this prediction across different fixed step sizes.</p>
+<figure id="s2-fro-figure" class="panel s2-figure"><p class="figure-kicker">Figure 2.2 · Frobenius constraint</p><h4 class="s2-title">Whole-matrix rotation</h4><div class="s2-legend"><span>Learning rate</span><div role="group" aria-label="Learning rate"><button type="button" disabled data-s2-legend="fro" data-s2-index="0" aria-pressed="false" aria-controls="s2-fro-chart"><i style="border-color:#D93236"></i>0.001</button><button type="button" disabled data-s2-legend="fro" data-s2-index="1" aria-pressed="false" aria-controls="s2-fro-chart"><i style="border-color:#DC7D22"></i>0.005</button><button type="button" disabled data-s2-legend="fro" data-s2-index="2" aria-pressed="false" aria-controls="s2-fro-chart"><i style="border-color:#2E8A45"></i>0.01</button><button type="button" disabled data-s2-legend="fro" data-s2-index="3" aria-pressed="false" aria-controls="s2-fro-chart"><i style="border-color:#2679B7"></i>0.02</button><button type="button" disabled data-s2-legend="fro" data-s2-index="4" aria-pressed="false" aria-controls="s2-fro-chart"><i style="border-color:#8D61B4"></i>0.05</button></div></div><p class="s2-axis-title">Rotation angle (rad)</p><div id="s2-fro-chart" class="s2-chart">{{include:src/figures/s2-fro-780.svg}}</div><p id="s2-fro-help" class="s2-helper">Select a curve to inspect its rotation angle.</p><p id="s2-fro-readout" class="s2-readout" aria-live="polite"></p><figcaption><strong>Figure 2.2.</strong> Whole-matrix rotation under the Frobenius constraint, at different fixed step sizes.</figcaption></figure>
+<p>The reported angles remain nearly constant at each setting. Larger step sizes give larger angles. The paper calls this <strong>static global rotation</strong>: the whole-matrix angle stays nearly steady in these runs.<sup id="s2-fnref2:fro"><a class="footnote-ref" href="#s2-fn:fro">3</a></sup></p>
+<details id="s2-exact-angle" class="source-detail"><summary>The exact Frobenius angle</summary>
+<p>Let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\|W_t\|_F=R"><mrow><msub><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo><mrow><msub><mi>W</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo></mrow><mi>F</mi></msub><mo>=</mo><mi>R</mi></mrow></math>. The whole-matrix angle is</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="\theta_t^{\mathrm{fro}}
+=
+\arccos\!\left(
+\frac{\langle W_{t+1},W_t\rangle_F}
+{\|W_{t+1}\|_F\|W_t\|_F}
+\right)."><mrow><msubsup><mi>θ</mi><mi>t</mi><mrow><mi mathvariant="normal">fro</mi></mrow></msubsup><mo>=</mo><mi mathvariant="normal">arccos</mi><mspace width="-0.167em"/><mrow><mo form="prefix" fence="true" stretchy="true" symmetric="true">(</mo><mrow><mfrac><mrow><msub><mrow><mo form="prefix" fence="true" stretchy="false" symmetric="true">⟨</mo><mrow><msub><mi>W</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>W</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">⟩</mo></mrow><mi>F</mi></msub></mrow><mrow><msub><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo><mrow><msub><mi>W</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo></mrow><mi>F</mi></msub><msub><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo><mrow><msub><mi>W</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo></mrow><mi>F</mi></msub></mrow></mfrac></mrow><mo form="postfix" fence="true" stretchy="true" symmetric="true">)</mo></mrow><mo>.</mo></mrow></math></div>
+<p>Let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="O_t"><mrow><msub><mi>O</mi><mi>t</mi></msub></mrow></math> be the matrix-sign direction from Section 0. Define its alignment with the weights:</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="\alpha_t=
+\frac{\langle W_t,O_t\rangle_F}{R\|O_t\|_F}."><mrow><msub><mi>α</mi><mi>t</mi></msub><mo>=</mo><mfrac><mrow><msub><mrow><mo form="prefix" fence="true" stretchy="false" symmetric="true">⟨</mo><mrow><msub><mi>W</mi><mi>t</mi></msub><mo>,</mo><msub><mi>O</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">⟩</mo></mrow><mi>F</mi></msub></mrow><mrow><mi>R</mi><msub><mrow class="math-norm"><mo form="prefix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo><mrow><msub><mi>O</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true" lspace="0" rspace="0">‖</mo></mrow><mi>F</mi></msub></mrow></mfrac><mo>.</mo></mrow></math></div>
+<p>For the normalized update without the small numerical stabilizer, Appendix C.3 gives</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="\cos\theta_t^{\mathrm{fro}}
+=
+\frac{1-\eta_t\alpha_t}
+{\sqrt{1-2\eta_t\alpha_t+\eta_t^2}}."><mrow><mi mathvariant="normal">cos</mi><msubsup><mi>θ</mi><mi>t</mi><mrow><mi mathvariant="normal">fro</mi></mrow></msubsup><mo>=</mo><mfrac><mrow><mn>1</mn><mo>−</mo><msub><mi>η</mi><mi>t</mi></msub><msub><mi>α</mi><mi>t</mi></msub></mrow><mrow><msqrt><mrow><mn>1</mn><mo>−</mo><mn>2</mn><msub><mi>η</mi><mi>t</mi></msub><msub><mi>α</mi><mi>t</mi></msub><mo>+</mo><msubsup><mi>η</mi><mi>t</mi><mn>2</mn></msubsup></mrow></msqrt></mrow></mfrac><mo>.</mo></mrow></math></div>
+<p>For small <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\eta_t"><mrow><msub><mi>η</mi><mi>t</mi></msub></mrow></math>,</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="\theta_t^{\mathrm{fro}}
+\approx\eta_t\sqrt{1-\alpha_t^2}."><mrow><msubsup><mi>θ</mi><mi>t</mi><mrow><mi mathvariant="normal">fro</mi></mrow></msubsup><mo>≈</mo><msub><mi>η</mi><mi>t</mi></msub><msqrt><mrow><mn>1</mn><mo>−</mo><msubsup><mi>α</mi><mi>t</mi><mn>2</mn></msubsup></mrow></msqrt><mo>.</mo></mrow></math></div>
+<p>When <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="|\alpha_t|"><mrow><mo form="prefix" fence="true" stretchy="false" symmetric="true">|</mo><mrow><msub><mi>α</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">|</mo></mrow></math> is also small, this reduces to <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\theta_t^{\mathrm{fro}}\approx\eta_t"><mrow><msubsup><mi>θ</mi><mi>t</mi><mrow><mi mathvariant="normal">fro</mi></mrow></msubsup><mo>≈</mo><msub><mi>η</mi><mi>t</mi></msub></mrow></math>. The approximation therefore uses both a small step and small alignment.<sup id="s2-fnref3:fro"><a class="footnote-ref" href="#s2-fn:fro">3</a></sup></p>
+</details>
+<div class="section-head"><span>03</span><h3 class="question-title">How does the spectral constraint change rotation?</h3></div>
+<p>Does fixing the largest singular value give the same kind of control? The strongest stretch is fixed, but the input and output directions associated with it can still change.</p>
+<p>Here, we track the leading right singular vector <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="v_t"><mrow><msub><mi>v</mi><mi>t</mi></msub></mrow></math>, the input direction that the matrix stretches most. The leading left singular vector <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="u_t"><mrow><msub><mi>u</mi><mi>t</mi></msub></mrow></math> gives the corresponding output direction. We measure how these directions change between steps, rather than the whole-matrix angle used above.</p>
+<p>The spectral gap separates the largest and second singular values. A smaller gap permits larger changes in the leading directions for the same step size. Their rotation can therefore depend on the changing spectrum, not only on the learning rate.<sup id="s2-fnref:spec"><a class="footnote-ref" href="#s2-fn:spec">4</a></sup></p>
+<p>Figure 2.3 follows these input and output directions during training.</p>
+<figure id="s2-spec-figure" class="panel s2-figure"><p class="figure-kicker">Figure 2.3 · Spectral constraint</p><h4 class="s2-title">Leading singular-direction rotation</h4><div class="s2-legend"><span>Learning rate</span><div role="group" aria-label="Learning rate"><button type="button" disabled data-s2-legend="spec" data-s2-index="0" aria-pressed="false" aria-controls="s2-u-chart s2-v-chart"><i style="border-color:#D93236"></i>0.001</button><button type="button" disabled data-s2-legend="spec" data-s2-index="1" aria-pressed="false" aria-controls="s2-u-chart s2-v-chart"><i style="border-color:#DC7D22"></i>0.005</button><button type="button" disabled data-s2-legend="spec" data-s2-index="2" aria-pressed="false" aria-controls="s2-u-chart s2-v-chart"><i style="border-color:#2E8A45"></i>0.01</button><button type="button" disabled data-s2-legend="spec" data-s2-index="3" aria-pressed="false" aria-controls="s2-u-chart s2-v-chart"><i style="border-color:#2679B7"></i>0.02</button><button type="button" disabled data-s2-legend="spec" data-s2-index="4" aria-pressed="false" aria-controls="s2-u-chart s2-v-chart"><i style="border-color:#8D61B4"></i>0.05</button></div></div><div class="s2-panels"><div><h5>Left singular direction u</h5><p class="s2-axis-title">Principal angle (rad)</p><div id="s2-u-chart" class="s2-chart">{{include:src/figures/s2-u-380.svg}}</div></div><div><h5>Right singular direction v</h5><p class="s2-axis-title">Principal angle (rad)</p><div id="s2-v-chart" class="s2-chart">{{include:src/figures/s2-v-380.svg}}</div></div></div><p id="s2-spec-help" class="s2-helper">Compare the left and right angles at the same setting.</p><p id="s2-spec-readout" class="s2-readout" aria-live="polite"></p><figcaption><strong>Figure 2.3.</strong> Rotation of the leading left and right singular directions under the spectral constraint.</figcaption></figure>
+<p>The measured angles vary during training, with similar trends on the left and right. The paper calls this <strong>adaptive subspace rotation</strong>.<sup id="s2-fnref2:spec"><a class="footnote-ref" href="#s2-fn:spec">4</a></sup> Fixing a norm does not give both constraints the same rotation behavior.</p>
+<details id="s2-spectral-angle-details" class="source-detail"><summary>How we measure spectral rotation</summary>
+<p>Let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="u_t"><mrow><msub><mi>u</mi><mi>t</mi></msub></mrow></math> and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="v_t"><mrow><msub><mi>v</mi><mi>t</mi></msub></mrow></math> be the leading left and right singular vectors of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="W_t"><mrow><msub><mi>W</mi><mi>t</mi></msub></mrow></math>. The spectral constraint gives</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="W_tv_t=R\,u_t."><mrow><msub><mi>W</mi><mi>t</mi></msub><msub><mi>v</mi><mi>t</mi></msub><mo>=</mo><mi>R</mi><mspace width="0.167em"/><msub><mi>u</mi><mi>t</mi></msub><mo>.</mo></mrow></math></div>
+<p>We measure their changes by</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="\theta_{u,t}=\arccos\!\left(|u_{t+1}^{\top}u_t|\right),
+\qquad
+\theta_{v,t}=\arccos\!\left(|v_{t+1}^{\top}v_t|\right)."><mrow><msub><mi>θ</mi><mrow><mi>u</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>=</mo><mi mathvariant="normal">arccos</mi><mspace width="-0.167em"/><mrow><mo form="prefix" fence="true" stretchy="true" symmetric="true">(</mo><mrow><mrow><mo form="prefix" fence="true" stretchy="false" symmetric="true">|</mo><mrow><msubsup><mi>u</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow><mrow><mo>⊤</mo></mrow></msubsup><msub><mi>u</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">|</mo></mrow></mrow><mo form="postfix" fence="true" stretchy="true" symmetric="true">)</mo></mrow><mo>,</mo><mspace width="2em"/><msub><mi>θ</mi><mrow><mi>v</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>=</mo><mi mathvariant="normal">arccos</mi><mspace width="-0.167em"/><mrow><mo form="prefix" fence="true" stretchy="true" symmetric="true">(</mo><mrow><mrow><mo form="prefix" fence="true" stretchy="false" symmetric="true">|</mo><mrow><msubsup><mi>v</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow><mrow><mo>⊤</mo></mrow></msubsup><msub><mi>v</mi><mi>t</mi></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">|</mo></mrow></mrow><mo form="postfix" fence="true" stretchy="true" symmetric="true">)</mo></mrow><mo>.</mo></mrow></math></div>
+<p>The absolute values treat opposite signs as the same singular direction. These angles are different from the whole-matrix angle in Figure 2.2.</p>
+<p>Set <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\theta_t^{\mathrm{spec}}=\max\{\theta_{u,t},\theta_{v,t}\}"><mrow><msubsup><mi>θ</mi><mi>t</mi><mrow><mi mathvariant="normal">spec</mi></mrow></msubsup><mo>=</mo><mo movablelimits="true">max</mo><mrow><mo form="prefix" fence="true" stretchy="false" symmetric="true">{</mo><mrow><msub><mi>θ</mi><mrow><mi>u</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>,</mo><msub><mi>θ</mi><mrow><mi>v</mi><mo>,</mo><mi>t</mi></mrow></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">}</mo></mrow></mrow></math>. For small angles, the paper gives the estimate</p>
+<div class="formula-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" data-tex="\theta_t^{\mathrm{spec}}
+\lesssim
+\eta_t\frac{R}{R-\sigma_2(W_{t+1})}."><mrow><msubsup><mi>θ</mi><mi>t</mi><mrow><mi mathvariant="normal">spec</mi></mrow></msubsup><mo>≲</mo><msub><mi>η</mi><mi>t</mi></msub><mfrac><mrow><mi>R</mi></mrow><mrow><mi>R</mi><mo>−</mo><msub><mi>σ</mi><mn>2</mn></msub><mrow><mo form="prefix" fence="true" stretchy="false" symmetric="true">(</mo><mrow><msub><mi>W</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><mo form="postfix" fence="true" stretchy="false" symmetric="true">)</mo></mrow></mrow></mfrac><mo>.</mo></mrow></math></div>
+<p>Here, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\sigma_2"><mrow><msub><mi>σ</mi><mn>2</mn></msub></mrow></math> is the second singular value. The denominator is the positive spectral gap used in this estimate. A smaller gap permits a larger rotation for the same step size. This is an estimate, not an equality.<sup id="s2-fnref3:spec"><a class="footnote-ref" href="#s2-fn:spec">4</a></sup></p>
+</details>
+<div class="section-head"><span>04</span><h3 class="question-title">Does weight decay still improve training?</h3></div>
+<p>We can now return to the question at the start. Once the constraint controls weight scale, does weight decay still add a benefit?</p>
+<p>We compare <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\lambda=0"><mrow><mi>λ</mi><mo>=</mo><mn>0</mn></mrow></math> and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\lambda=0.1"><mrow><mi>λ</mi><mo>=</mo><mn>0.1</mn></mrow></math> on a 330M Qwen3-like model. Each pair uses the same learning rate and all other settings. The table reports validation loss.</p>
+<p><strong>Table 2.1.</strong> Each cell shows loss without decay / loss with decay.</p>
+<div class="table-scroll s2-table"><table>
+<thead>
+<tr>
+<th>Optimizer</th>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\eta=0.007"><mrow><mi>η</mi><mo>=</mo><mn>0.007</mn></mrow></math></th>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\eta=0.010"><mrow><mi>η</mi><mo>=</mo><mn>0.010</mn></mrow></math></th>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\eta=0.030"><mrow><mi>η</mi><mo>=</mo><mn>0.030</mn></mrow></math></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MACRO-fro</td>
+<td>2.742 / 2.742</td>
+<td>2.730 / 2.729</td>
+<td>2.718 / 2.718</td>
+</tr>
+<tr>
+<td>MACRO-spec</td>
+<td>2.728 / 2.727</td>
+<td>2.715 / 2.715</td>
+<td>2.783 / 2.783</td>
+</tr>
+</tbody>
+</table></div>
+<p>The paired losses differ by at most <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="0.001"><mrow><mn>0.001</mn></mrow></math> at the reported precision. Additional weight decay gives little benefit in these tests.<sup id="s2-fnref:ablation"><a class="footnote-ref" href="#s2-fn:ablation">5</a></sup></p>
+<details id="s2-other-optimizers" class="source-detail">
+<summary>Other constrained optimizers</summary>
+<p>The paper also tests MuonH-fro and MuonH-spec with the same decay settings.</p>
+<div class="table-scroll s2-table"><table>
+<thead>
+<tr>
+<th>Optimizer</th>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\eta=0.007"><mrow><mi>η</mi><mo>=</mo><mn>0.007</mn></mrow></math></th>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\eta=0.010"><mrow><mi>η</mi><mo>=</mo><mn>0.010</mn></mrow></math></th>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\eta=0.030"><mrow><mi>η</mi><mo>=</mo><mn>0.030</mn></mrow></math></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MuonH-fro</td>
+<td>2.740 / 2.740</td>
+<td>2.722 / 2.722</td>
+<td>2.717 / 2.717</td>
+</tr>
+<tr>
+<td>MuonH-spec</td>
+<td>2.728 / 2.729</td>
+<td>2.715 / 2.715</td>
+<td>2.766 / 2.766</td>
+</tr>
+</tbody>
+</table></div>
+<p>These paired losses also differ by at most <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="0.001"><mrow><mn>0.001</mn></mrow></math>.<sup id="s2-fnref2:ablation"><a class="footnote-ref" href="#s2-fn:ablation">5</a></sup></p>
+</details>
+<details id="s2-muon-decay" class="source-detail">
+<summary>Weight-decay tuning for Muon</summary>
+<p>A separate 240M experiment varies both the learning rate and weight decay for Muon. The table reports validation perplexity (PPL).</p>
+<div class="table-scroll s2-table"><table>
+<thead>
+<tr>
+<th>Learning rate</th>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\lambda=0.01"><mrow><mi>λ</mi><mo>=</mo><mn>0.01</mn></mrow></math></th>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\lambda=0.05"><mrow><mi>λ</mi><mo>=</mo><mn>0.05</mn></mrow></math></th>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\lambda=0.10"><mrow><mi>λ</mi><mo>=</mo><mn>0.10</mn></mrow></math></th>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" data-tex="\lambda=0.50"><mrow><mi>λ</mi><mo>=</mo><mn>0.50</mn></mrow></math></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.008</td>
+<td>21.348</td>
+<td>21.020</td>
+<td><strong>20.845</strong></td>
+<td>21.168</td>
+</tr>
+<tr>
+<td>0.016</td>
+<td>20.972</td>
+<td>20.680</td>
+<td><strong>20.676</strong></td>
+<td>21.874</td>
+</tr>
+<tr>
+<td>0.032</td>
+<td>20.691</td>
+<td><strong>20.583</strong></td>
+<td>20.848</td>
+<td>23.345</td>
+</tr>
+</tbody>
+</table></div>
+<p>The best tested decay coefficient changes with the learning rate. The lowest Muon PPL is 20.583. MACRO-fro reaches 20.579 without decay on the constrained matrices. MACRO-spec reaches 20.502.<sup id="s2-fnref:muon"><a class="footnote-ref" href="#s2-fn:muon">6</a></sup></p>
+</details>
+<div class="takeaway"><h3 class="takeaway-title">Takeaway</h3>
+<p><strong>MACRO fixes weight scale after each update. Frobenius constraints give nearly steady whole-matrix angles in the fixed-step runs. Spectral constraints allow changing leading-direction angles. Additional weight decay gives little benefit in these tests.</strong></p>
+</div>
+<p>So far, we have asked how far the weights turn. Next, we ask whether a small proposed update changes the stored weight at all.</p>
+</section>
