@@ -62,7 +62,7 @@ CV 最初使用 `/Users/evelyn/Documents/KangAn_CV_1page.pdf` 的副本。这次
 
 ### 首页
 
-编辑 `dist/index.html` 中的 `.profile`。简介及求职信息位于 `.profile-bio`，照片位于 `.portrait`。更换同名照片后，同时更新图片的 `width`、`height` 和 `alt` 属性。News 位于 `#news` 下的 `.news-list`，新消息放在最上面；同时更新可见日期和 `<time datetime="YYYY-MM-DD">` 的机器可读日期。
+编辑 `dist/index.html` 中的 `.profile`。简介及求职信息位于 `.profile-bio`，照片位于 `.portrait`。更换同名照片后，同时更新图片的 `width`、`height` 和 `alt` 属性。News 位于 `#news` 下的 `.news-list`，新消息放在最上面；同时更新可见日期和 `<time datetime="YYYY-MM-DD">` 的机器可读日期。News 默认显示最新两条，向下滚动可查看旧消息。`dist/assets/js/news.js` 根据前两条消息的实际高度设置滚动区域，窗口宽度或文字高度变化时会自动调整。列表支持鼠标滚轮、触控和键盘滚动。打印时显示全部消息。
 
 ### Research
 
