@@ -52,7 +52,7 @@ News 仅在主页出现。旧 `news.html` 自动跳到首页的 News 区域，�
 
 ## 已填的真实信息
 
-姓名 Kang An（安康）、Rice University 博士生身份、研究简介、Email、GitHub、Google Scholar、LinkedIn 均来自你的明确说明或 `KangAn_CV_1page.pdf`。首页简介和三条 News 已按你提供的内容填好，并润色英文拼写与语法。简介包含导师 Shiqian Ma、合作导师 Donald Goldfarb 的主页链接，以及博士后、工业界全职和实习求职信息。News 按 2026 年 9 月 29 日、9 月 9 日、8 月 23 日倒序排列，Jiaxiang Li 的主页已链接。
+姓名 Kang An（安康）、Rice University 博士生身份、研究简介、Email、GitHub、Google Scholar、LinkedIn 均来自你的明确说明或 `KangAn_CV_1page.pdf`。首页简介和五条 News 已按你提供的内容填好，并修改英文拼写与语法。简介包含导师 Shiqian Ma、合作导师 Donald Goldfarb 的主页链接，以及博士后、工业界全职和实习求职信息。News 按 2026 年 11 月 4 日、10 月 31 日、9 月 29 日、9 月 9 日、8 月 23 日倒序排列。最新两条是 NeurIPS 2026 Top Reviewer 及 Atlanta 参会消息，以及第一作者论文获 SISC 接收的消息。论文标题已链接到你提供的 arXiv PDF。Jiaxiang Li 的主页已链接。
 
 CV 最初使用 `/Users/evelyn/Documents/KangAn_CV_1page.pdf` 的副本。这次首页修改保留了你当前放在网站中的 PDF，没有改写、重新导出或覆盖它。以后更新简历，覆盖 `dist/assets/files/KangAn_CV_1page.pdf` 即可，各页链接保持有效。
 
