@@ -94,11 +94,11 @@ Manifold Poster 使用原始 PDF 的完整第一页生成 1600 × 1067 像素 PN
 
 ### Activities
 
-报告在 `dist/activities.html` 中的 `.activity-list`，维护可见日期与 `<time datetime="YYYY-MM">`，按最新到最早排列。当前条目是 November 2026 / San Francisco、March 2026 / Atlanta、October 2025 / Atlanta。第一条年份经你确认修正为 2026，并标记 Upcoming；报告完成后可删除该标记。
+报告在 `dist/activities.html` 中的 `.activity-list`，维护可见日期与 `<time datetime="YYYY-MM">`，按最新到最早排列。当前条目是 November 2026 / San Francisco、March 2026 / Atlanta、October 2025 / Atlanta。第一条年份经你确认修正为 2026。Upcoming 标记已按你的要求删除。
 
 会议时间地点核对自 [2026 INFORMS Annual Meeting](https://www.informs.org/Meetings-Conferences/INFORMS-Conference-Calendar/2026-INFORMS-Annual-Meeting)、[IOS 2026](https://ios2026.isye.gatech.edu/home) 和 [2025 INFORMS Annual Meeting](https://www.informs.org/Meetings-Conferences/INFORMS-Conference-Calendar/2025-INFORMS-Annual-Meeting)。Speaker 身份与审稿经历均来自你提供的信息。
 
-审稿服务在 `.review-list`，分为 Journals 和 Conferences。当前包含 TMLR、JMLR、IEEE Transactions on Information Theory，以及 NeurIPS / ICLR 的 2025、2026 年记录。
+审稿服务在 `.review-list`，分为 Journals 和 Conferences。当前包含 TMLR、JMLR、IEEE Transactions on Information Theory，以及 NeurIPS / ICLR 的 2025、2026 年记录。NeurIPS 的 2026 年记录带有 Top Reviewer 标记。
 
 ### Blog
 
